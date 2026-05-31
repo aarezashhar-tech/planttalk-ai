@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Plant Doctor - PlantTalk AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&amp;family=Inter:wght@400;500;600&amp;family=Geist:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#3b674f",
+                        "on-primary-fixed": "#002112",
+                        "surface-container-lowest": "#051109",
+                        "secondary-container": "#00a572",
+                        "on-secondary-fixed": "#002113",
+                        "on-primary-container": "#86b598",
+                        "error-container": "#93000a",
+                        "surface": "#09160e",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-container": "#00311f",
+                        "surface-container-highest": "#2a382f",
+                        "on-primary-fixed-variant": "#234f38",
+                        "surface-dim": "#09160e",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-primary": "#073823",
+                        "surface-container": "#15221a",
+                        "on-secondary-fixed-variant": "#005236",
+                        "error": "#ffb4ab",
+                        "inverse-on-surface": "#26332a",
+                        "surface-variant": "#2a382f",
+                        "background": "#09160e",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "primary-container": "#1a4731",
+                        "primary-fixed": "#bdeecf",
+                        "surface-container-low": "#111e16",
+                        "outline-variant": "#414943",
+                        "secondary": "#4edea3",
+                        "on-surface-variant": "#c1c9c1",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface-bright": "#2f3c33",
+                        "tertiary-container": "#5a3700",
+                        "on-surface": "#d7e7d9",
+                        "on-secondary": "#003824",
+                        "outline": "#8b938c",
+                        "inverse-surface": "#d7e7d9",
+                        "tertiary": "#ffb95f",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "primary": "#a1d1b4",
+                        "primary-fixed-dim": "#a1d1b4",
+                        "on-tertiary-container": "#ec9700",
+                        "surface-container-high": "#202d24",
+                        "on-error": "#690005",
+                        "secondary-fixed-dim": "#4edea3",
+                        "surface-tint": "#a1d1b4",
+                        "on-tertiary": "#472a00",
+                        "on-background": "#d7e7d9"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding": "24px",
+                        "gutter": "16px",
+                        "base": "8px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "label-mono": ["Geist"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-mono": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Ambient Gradient Mesh Background */
+        body {
+            background-color: #0F1C14;
+            background-image: radial-gradient(circle at 15% 50%, rgba(26, 71, 49, 0.4) 0%, transparent 50%),
+                              radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+                              radial-gradient(circle at 50% 80%, rgba(0, 165, 114, 0.2) 0%, transparent 50%);
+            background-attachment: fixed;
+            animation: pulse-bg 15s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse-bg {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top-color: rgba(255, 255, 255, 0.2);
+            border-left-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .glass-panel:hover {
+            transform: perspective(1000px) rotateX(1deg) rotateY(-1deg);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* Drag & Drop Area Animations */
+        .marching-ants {
+            background-image: linear-gradient(90deg, #10B981 50%, transparent 50%),
+                              linear-gradient(90deg, #10B981 50%, transparent 50%),
+                              linear-gradient(0deg, #10B981 50%, transparent 50%),
+                              linear-gradient(0deg, #10B981 50%, transparent 50%);
+            background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+            background-size: 16px 2px, 16px 2px, 2px 16px, 2px 16px;
+            background-position: 0% 0%, 100% 100%, 0% 100%, 100% 0px;
+            border-radius: 12px;
+            animation: march 1s linear infinite;
+        }
+
+        @keyframes march {
+            0% { background-position: 0% 0%, 100% 100%, 0% 100%, 100% 0px; }
+            100% { background-position: 16px 0%, calc(100% - 16px) 100%, 0% calc(100% - 16px), 100% 16px; }
+        }
+
+        .bounce-subtle {
+            animation: bounce 2s infinite cubic-bezier(0.28, 0.84, 0.42, 1);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Glowing Button */
+        .btn-glow {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.7);
+            transform: translateY(-2px);
+        }
+
+        /* Page Load Fade In */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="text-on-surface min-h-screen overflow-x-hidden selection:bg-secondary selection:text-on-secondary">
+<!-- SideNavBar (Shared Component) -->
+<nav class="fixed left-0 top-0 h-full w-64 rounded-r-xl bg-surface-container dark:bg-surface-container bg-gradient-to-b from-primary-container to-surface-container-lowest backdrop-blur-xl border-r border-white/10 shadow-[0_0_20px_rgba(16,185,129,0.1)] flex flex-col p-container-padding z-50 hidden md:flex">
+<!-- Brand / Header -->
+<div class="mb-12">
+<h1 class="font-headline-lg text-headline-lg font-bold text-secondary tracking-tight">PLANTTALK AI</h1>
+<p class="font-label-mono text-label-mono text-on-surface-variant mt-1 uppercase tracking-wider">Living Intelligence</p>
+</div>
+<!-- Navigation Links -->
+<ul class="space-y-2 flex-grow">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-mono text-label-mono">Home</span>
+</a>
+</li>
+<li>
+<!-- Active State based on Logic mapping /doctor -> Doctor -->
+<a class="flex items-center gap-3 px-4 py-3 text-secondary bg-white/10 rounded-lg border-l-2 border-secondary scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="medical_services">medical_services</span>
+<span class="font-label-mono text-label-mono">Doctor</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+<span class="font-label-mono text-label-mono">India</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-mono text-label-mono">Community</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-mono text-label-mono">Settings</span>
+</a>
+</li>
+</ul>
+<!-- CTA -->
+<div class="mt-auto pt-6">
+<button class="w-full glass-panel text-on-surface font-label-mono text-label-mono py-3 rounded-lg hover:bg-white/10 transition-colors border border-white/20">
+                Upgrade to Pro
+            </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 min-h-screen flex flex-col relative z-10">
+<!-- TopAppBar (Shared Component) -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] h-20 bg-transparent backdrop-blur-md border-b border-white/5 flex justify-between items-center px-margin-desktop z-40 hidden md:flex">
+<div class="text-primary dark:text-primary">
+<!-- Spacer for layout balance -->
+</div>
+<div class="flex items-center gap-6">
+<!-- Search could go here based on "search_bar": "on_right" but omitted for focus on Doctor tool, or simplified -->
+<button class="text-on-surface-variant hover:text-secondary transition-colors hover:translate-y-[-1px] transition-transform">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-secondary transition-colors hover:translate-y-[-1px] transition-transform">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Doctor Page Content -->
+<div class="pt-32 px-margin-mobile md:px-margin-desktop pb-12 flex-grow flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto w-full">
+<!-- Main Center Zone -->
+<div class="flex-1 flex flex-col fade-in-up" style="animation-delay: 0.1s;">
+<header class="mb-8">
+<h2 class="font-display-lg text-display-lg text-on-surface mb-2 flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-5xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">psychiatry</span>
+                        AI Plant Doctor
+                    </h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+                        Upload a photo of your plant for an instant diagnosis powered by Gemini Vision API.
+                    </p>
+</header>
+<!-- Drag & Drop Container -->
+<div class="glass-panel rounded-2xl flex-grow flex flex-col items-center justify-center p-8 relative overflow-hidden group min-h-[400px]">
+<!-- Subtle background glow in container -->
+<div class="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-50"></div>
+<div class="marching-ants absolute inset-4 z-0 opacity-50 group-hover:opacity-100 transition-opacity"></div>
+<div class="relative z-10 flex flex-col items-center text-center space-y-6">
+<div class="w-24 h-24 rounded-full bg-surface-container-highest flex items-center justify-center shadow-lg border border-white/10 bounce-subtle mb-4">
+<span class="material-symbols-outlined text-4xl text-secondary" data-icon="add_a_photo">add_a_photo</span>
+</div>
+<div>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-2">Drag and drop an image here</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">or <span class="text-secondary cursor-pointer hover:underline">click to browse</span> your files</p>
+</div>
+<p class="font-label-mono text-label-mono text-on-surface-variant/60 uppercase">Supports JPG, PNG, WEBP (Max 10MB)</p>
+</div>
+</div>
+<!-- Action Button -->
+<div class="mt-8 flex justify-end">
+<button class="bg-secondary text-on-secondary px-8 py-4 rounded-xl font-headline-lg text-headline-lg-mobile md:text-headline-lg text-[20px] font-bold flex items-center gap-3 btn-glow">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+                        Analyze Plant Image
+                    </button>
+</div>
+</div>
+<!-- Right Sidebar Panel - Recent Diagnoses -->
+<aside class="w-full lg:w-80 flex flex-col gap-6 fade-in-up" style="animation-delay: 0.2s;">
+<div class="glass-panel rounded-xl p-6 h-full flex flex-col">
+<h3 class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-widest border-b border-white/10 pb-4 mb-6">Recent Diagnoses</h3>
+<!-- Empty State -->
+<div class="flex-grow flex flex-col items-center justify-center text-center py-12 opacity-70">
+<span class="material-symbols-outlined text-5xl text-outline-variant mb-4" data-icon="search" style="font-variation-settings: 'wght' 200;">search</span>
+<p class="font-body-md text-body-md text-on-surface-variant">No recent diagnoses found.</p>
+<p class="font-label-mono text-label-mono text-on-surface-variant/50 mt-2">Upload an image to get started.</p>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Mobile Navigation Bottom Bar (Fallback for small screens) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full glass-panel border-t-0 z-50 px-4 py-3 flex justify-between items-center bg-surface-container/90">
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-mono text-[10px]">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="medical_services">medical_services</span>
+<span class="font-label-mono text-[10px]">Doctor</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+<span class="font-label-mono text-[10px]">India</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-mono text-[10px]">Community</span>
+</a>
+</nav>
+</body></html>

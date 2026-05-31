@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PlantTalk AI - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Geist:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-primary": "#3b674f",
+                    "on-primary-fixed": "#002112",
+                    "surface-container-lowest": "#051109",
+                    "secondary-container": "#00a572",
+                    "on-secondary-fixed": "#002113",
+                    "on-primary-container": "#86b598",
+                    "error-container": "#93000a",
+                    "surface": "#09160e",
+                    "on-error-container": "#ffdad6",
+                    "on-secondary-container": "#00311f",
+                    "surface-container-highest": "#2a382f",
+                    "on-primary-fixed-variant": "#234f38",
+                    "surface-dim": "#09160e",
+                    "on-tertiary-fixed": "#2a1700",
+                    "on-primary": "#073823",
+                    "surface-container": "#15221a",
+                    "on-secondary-fixed-variant": "#005236",
+                    "error": "#ffb4ab",
+                    "inverse-on-surface": "#26332a",
+                    "surface-variant": "#2a382f",
+                    "background": "#09160e",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "primary-container": "#1a4731",
+                    "primary-fixed": "#bdeecf",
+                    "surface-container-low": "#111e16",
+                    "outline-variant": "#414943",
+                    "secondary": "#4edea3",
+                    "on-surface-variant": "#c1c9c1",
+                    "tertiary-fixed": "#ffddb8",
+                    "surface-bright": "#2f3c33",
+                    "tertiary-container": "#5a3700",
+                    "on-surface": "#d7e7d9",
+                    "on-secondary": "#003824",
+                    "outline": "#8b938c",
+                    "inverse-surface": "#d7e7d9",
+                    "tertiary": "#ffb95f",
+                    "secondary-fixed": "#6ffbbe",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "primary": "#a1d1b4",
+                    "primary-fixed-dim": "#a1d1b4",
+                    "on-tertiary-container": "#ec9700",
+                    "surface-container-high": "#202d24",
+                    "on-error": "#690005",
+                    "secondary-fixed-dim": "#4edea3",
+                    "surface-tint": "#a1d1b4",
+                    "on-tertiary": "#472a00",
+                    "on-background": "#d7e7d9"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-padding": "24px",
+                    "gutter": "16px",
+                    "base": "8px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "32px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "label-mono": ["Geist"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #0F1C14;
+            overflow-x: hidden;
+        }
+
+        /* Animated Mesh Background */
+        .mesh-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(26, 71, 49, 0.4), transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15), transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(59, 103, 79, 0.3), transparent 50%);
+            background-size: 200% 200%;
+            animation: meshAnimation 20s ease infinite;
+            pointer-events: none;
+        }
+
+        @keyframes meshAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            border-left: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            border-left: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transform-style: preserve-3d;
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px) rotateX(2deg) rotateY(-2deg);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .glass-input {
+            background: rgba(0, 0, 0, 0.2);
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: border-color 0.3s ease;
+        }
+        
+        .glass-input:focus {
+            outline: none;
+            border-bottom: 1px solid #10B981;
+            box-shadow: 0 4px 15px -3px rgba(16, 185, 129, 0.2);
+        }
+
+        /* Animations */
+        @keyframes pulse-critical {
+            0% { box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 82, 82, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 82, 82, 0); }
+        }
+        
+        @keyframes pulse-good {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .status-pulse-red {
+            animation: pulse-critical 2s infinite;
+        }
+        
+        .status-pulse-green {
+            animation: pulse-good 2s infinite;
+        }
+
+        .stagger-1 { animation: slideUp 0.6s ease forwards 0.1s; opacity: 0; }
+        .stagger-2 { animation: slideUp 0.6s ease forwards 0.2s; opacity: 0; }
+        .stagger-3 { animation: slideUp 0.6s ease forwards 0.3s; opacity: 0; }
+        .stagger-4 { animation: slideUp 0.6s ease forwards 0.4s; opacity: 0; }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Nav Sidebar Specifics */
+        .sidebar-glow {
+            box-shadow: 0 0 20px rgba(16,185,129,0.1);
+        }
+        
+        .nav-item-active {
+            position: relative;
+        }
+        
+        .nav-item-active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 60%;
+            width: 2px;
+            background-color: #10B981;
+            box-shadow: 0 0 10px #10B981;
+            border-radius: 0 2px 2px 0;
+        }
+    </style>
+</head>
+<body class="text-on-surface font-body-md text-body-md antialiased selection:bg-secondary selection:text-on-secondary">
+<!-- Animated Mesh Background -->
+<div class="mesh-bg"></div>
+<div class="flex h-screen overflow-hidden">
+<!-- SideNavBar (from JSON) -->
+<nav class="hidden md:flex flex-col h-full p-container-padding bg-surface-container dark:bg-surface-container fixed left-0 top-0 w-64 rounded-r-xl bg-gradient-to-b from-primary-container to-surface-container-lowest backdrop-blur-xl border-r border-white/10 shadow-[0_0_20px_rgba(16,185,129,0.1)] z-50">
+<!-- Brand Header -->
+<div class="mb-8">
+<h1 class="font-headline-lg text-headline-lg font-bold text-secondary tracking-tight">PLANTTALK AI</h1>
+<p class="font-label-mono text-label-mono text-on-surface-variant mt-1">Living Intelligence</p>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 flex flex-col gap-2">
+<!-- Active Item: Home -->
+<a class="flex items-center gap-3 px-4 py-3 text-secondary bg-white/10 rounded-lg border-l-2 border-secondary nav-item-active scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-mono text-label-mono">Home</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">medical_services</span>
+<span class="font-label-mono text-label-mono">Doctor</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">location_on</span>
+<span class="font-label-mono text-label-mono">India</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-mono text-label-mono">Community</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-mono text-label-mono">Settings</span>
+</a>
+</div>
+<!-- Bottom CTA -->
+<div class="mt-auto">
+<button class="w-full py-3 rounded-lg bg-secondary text-on-secondary font-label-mono text-label-mono font-bold hover:shadow-[0_0_15px_rgba(78,222,163,0.5)] transition-shadow duration-300">
+                    Upgrade to Pro
+                </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-0 md:ml-64 h-full overflow-y-auto relative z-10">
+<!-- TopAppBar (from JSON) -->
+<header class="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] h-20 bg-transparent backdrop-blur-md border-b border-white/5 flex justify-between items-center px-margin-desktop z-40">
+<!-- Mobile Logo (hidden on desktop) -->
+<div class="md:hidden">
+<span class="font-headline-lg-mobile text-headline-lg-mobile font-black text-secondary">PlantTalk AI</span>
+</div>
+<!-- Spacer for desktop (since logo is in sidebar) -->
+<div class="hidden md:block flex-1"></div>
+<!-- Actions -->
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-secondary hover:-translate-y-[1px] transition-all p-2 rounded-full hover:bg-white/5">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-secondary hover:-translate-y-[1px] transition-all p-2 rounded-full hover:bg-white/5">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Dashboard Content Container -->
+<div class="pt-28 pb-12 px-margin-mobile md:px-margin-desktop max-w-[1600px] mx-auto min-h-screen flex flex-col gap-8">
+<!-- Hero Section -->
+<section class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 stagger-1">
+<div>
+<h2 class="font-display-lg text-display-lg text-on-surface">Welcome back, Farmer! 🌾</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 max-w-2xl">Here is your active field intelligence for today.</p>
+</div>
+</section>
+<!-- Location Search & Chips -->
+<section class="glass-panel rounded-xl p-6 stagger-2">
+<div class="flex flex-col md:flex-row gap-6 items-start md:items-center">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">location_on</span>
+<input class="glass-input w-full pl-10 pr-4 py-3 rounded text-on-surface font-body-md text-body-md placeholder-on-surface-variant/50 focus:ring-0" placeholder="Search any place in India..." type="text"/>
+<p class="mt-2 font-label-mono text-label-mono text-secondary">Meerut, Uttar Pradesh</p>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-on-surface hover:bg-white/10 hover:border-secondary/50 transition-all font-label-mono text-label-mono">
+                                Meerut
+                            </button>
+<button class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-on-surface-variant hover:bg-white/10 transition-all font-label-mono text-label-mono">
+                                Vaniyambadi
+                            </button>
+<button class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-on-surface-variant hover:bg-white/10 transition-all font-label-mono text-label-mono">
+                                Ambur
+                            </button>
+</div>
+</div>
+</section>
+<!-- 4 Column Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Card 1: Live Weather -->
+<div class="glass-card rounded-xl p-6 flex flex-col justify-between min-h-[220px] stagger-3">
+<div class="flex justify-between items-start">
+<span class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-wider">Live Weather</span>
+<span class="material-symbols-outlined text-tertiary text-3xl">light_mode</span>
+</div>
+<div>
+<div class="font-display-lg text-display-lg text-on-surface mt-2 mb-1 flex items-baseline gap-1">
+<span class="counter" data-target="26">0</span>°C
+                            </div>
+<p class="font-body-md text-body-md text-on-surface-variant">Meerut</p>
+</div>
+<div class="flex gap-4 mt-4 pt-4 border-t border-white/10">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-sm">water_drop</span>
+<span class="font-label-mono text-label-mono text-on-surface-variant">65%</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-sm">rainy</span>
+<span class="font-label-mono text-label-mono text-on-surface-variant">10%</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Pest Risk -->
+<div class="glass-card rounded-xl p-6 flex flex-col justify-between min-h-[220px] stagger-3" style="animation-delay: 0.4s;">
+<div class="flex justify-between items-start">
+<span class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-wider">Pest Risk</span>
+<span class="material-symbols-outlined text-error">bug_report</span>
+</div>
+<div class="flex items-center gap-3 mt-4">
+<div class="w-4 h-4 rounded-full bg-error status-pulse-red"></div>
+<span class="font-headline-lg text-headline-lg text-error font-bold tracking-tight">HIGH</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-4 text-sm leading-relaxed">
+                            Immediate monitoring required. High probability of aphid infestation due to recent humidity spike in sector 4.
+                        </p>
+</div>
+<!-- Card 3: Overall Health -->
+<div class="glass-card rounded-xl p-6 flex flex-col justify-between min-h-[220px] stagger-3" style="animation-delay: 0.5s;">
+<div class="flex justify-between items-start">
+<span class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-wider">Overall Health</span>
+<span class="material-symbols-outlined text-secondary">eco</span>
+</div>
+<div class="flex items-center gap-3 mt-4">
+<div class="w-4 h-4 rounded-full bg-secondary status-pulse-green"></div>
+<span class="font-headline-lg text-headline-lg text-secondary font-bold tracking-tight">GOOD</span>
+</div>
+<div class="mt-4 space-y-2">
+<div class="flex justify-between items-center border-b border-white/5 pb-2">
+<span class="font-label-mono text-label-mono text-on-surface-variant">Crop</span>
+<span class="font-label-mono text-label-mono text-on-surface font-semibold">Wheat</span>
+</div>
+<div class="flex justify-between items-center pt-1">
+<span class="font-label-mono text-label-mono text-on-surface-variant">Next Watering</span>
+<span class="font-label-mono text-label-mono text-on-surface">Tomorrow 10am <span class="text-primary">(20L)</span></span>
+</div>
+</div>
+</div>
+<!-- Card 4: Soil Health -->
+<div class="glass-card rounded-xl p-6 flex flex-col justify-between min-h-[220px] stagger-3" style="animation-delay: 0.6s;">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-wider">Soil Health</span>
+<span class="material-symbols-outlined text-primary">science</span>
+</div>
+<div class="grid grid-cols-2 gap-3 mt-2">
+<!-- pH -->
+<div class="bg-black/20 rounded-lg p-3 border-l-2 border-secondary flex flex-col justify-center">
+<span class="font-label-mono text-label-mono text-on-surface-variant text-[10px]">pH Level</span>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-secondary mt-1">6.5</span>
+</div>
+<!-- Nitrogen -->
+<div class="bg-black/20 rounded-lg p-3 border-l-2 border-tertiary flex flex-col justify-center">
+<span class="font-label-mono text-label-mono text-on-surface-variant text-[10px]">Nitrogen (N)</span>
+<span class="font-body-md text-body-md font-semibold text-tertiary mt-1">Medium</span>
+</div>
+<!-- Phosphorus -->
+<div class="bg-black/20 rounded-lg p-3 border-l-2 border-secondary flex flex-col justify-center">
+<span class="font-label-mono text-label-mono text-on-surface-variant text-[10px]">Phosphorus (P)</span>
+<span class="font-body-md text-body-md font-semibold text-secondary mt-1">Good</span>
+</div>
+<!-- Potassium -->
+<div class="bg-black/20 rounded-lg p-3 border-l-2 border-error flex flex-col justify-center">
+<span class="font-label-mono text-label-mono text-on-surface-variant text-[10px]">Potassium (K)</span>
+<span class="font-body-md text-body-md font-semibold text-error mt-1">Low</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Number Counter Animation
+            const counters = document.querySelectorAll('.counter');
+            const speed = 200; // lower is slower
+
+            counters.forEach(counter => {
+                const animate = () => {
+                    const value = +counter.getAttribute('data-target');
+                    const data = +counter.innerText;
+                    
+                    const time = value / speed;
+                    if (data < value) {
+                        counter.innerText = Math.ceil(data + time);
+                        setTimeout(animate, 20);
+                    } else {
+                        counter.innerText = value;
+                    }
+                }
+                
+                // Add a slight delay before starting to match entrance animations
+                setTimeout(animate, 1000);
+            });
+            
+            // Subtle Card Tilt Effect Setup
+            const cards = document.querySelectorAll('.glass-card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left; // x position within the element.
+                    const y = e.clientY - rect.top;  // y position within the element.
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateX = ((y - centerY) / centerY) * -5;
+                    const rotateY = ((x - centerX) / centerX) * 5;
+                    
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = '';
+                });
+            });
+        });
+    </script>
+</body></html>

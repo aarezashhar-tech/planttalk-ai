@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PlantTalk AI - India Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@500&amp;family=Hanken+Grotesk:wght@600;700;900&amp;family=Inter:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-primary": "#3b674f",
+                      "on-primary-fixed": "#002112",
+                      "surface-container-lowest": "#051109",
+                      "secondary-container": "#00a572",
+                      "on-secondary-fixed": "#002113",
+                      "on-primary-container": "#86b598",
+                      "error-container": "#93000a",
+                      "surface": "#09160e",
+                      "on-error-container": "#ffdad6",
+                      "on-secondary-container": "#00311f",
+                      "surface-container-highest": "#2a382f",
+                      "on-primary-fixed-variant": "#234f38",
+                      "surface-dim": "#09160e",
+                      "on-tertiary-fixed": "#2a1700",
+                      "on-primary": "#073823",
+                      "surface-container": "#15221a",
+                      "on-secondary-fixed-variant": "#005236",
+                      "error": "#ffb4ab",
+                      "inverse-on-surface": "#26332a",
+                      "surface-variant": "#2a382f",
+                      "background": "#09160e",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "primary-container": "#1a4731",
+                      "primary-fixed": "#bdeecf",
+                      "surface-container-low": "#111e16",
+                      "outline-variant": "#414943",
+                      "secondary": "#4edea3",
+                      "on-surface-variant": "#c1c9c1",
+                      "tertiary-fixed": "#ffddb8",
+                      "surface-bright": "#2f3c33",
+                      "tertiary-container": "#5a3700",
+                      "on-surface": "#d7e7d9",
+                      "on-secondary": "#003824",
+                      "outline": "#8b938c",
+                      "inverse-surface": "#d7e7d9",
+                      "tertiary": "#ffb95f",
+                      "secondary-fixed": "#6ffbbe",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "primary": "#a1d1b4",
+                      "primary-fixed-dim": "#a1d1b4",
+                      "on-tertiary-container": "#ec9700",
+                      "surface-container-high": "#202d24",
+                      "on-error": "#690005",
+                      "secondary-fixed-dim": "#4edea3",
+                      "surface-tint": "#a1d1b4",
+                      "on-tertiary": "#472a00",
+                      "on-background": "#d7e7d9"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-padding": "24px",
+                      "gutter": "16px",
+                      "base": "8px",
+                      "margin-mobile": "16px",
+                      "margin-desktop": "32px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "display-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-mono": [
+                              "Geist"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-mono": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ]
+              }
+            },
+          }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0F1C14; /* Level 0 Base */
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(26, 71, 49, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.1), transparent 25%);
+            background-attachment: fixed;
+        }
+        
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top-color: rgba(255, 255, 255, 0.15);
+            border-left-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .glass-panel:hover {
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+            transform: perspective(1000px) rotateX(2deg) rotateY(-2deg);
+            transition: all 0.3s ease;
+        }
+
+        .accordion-content {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .accordion-content.open {
+            grid-template-rows: 1fr;
+        }
+        
+        .accordion-inner {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="text-on-background min-h-screen overflow-x-hidden font-body-md flex">
+<!-- Background Gradient Animation -->
+<div class="fixed inset-0 pointer-events-none z-[-1] opacity-50">
+<div class="absolute inset-0 bg-gradient-to-br from-surface-container-lowest via-surface-container to-primary-container animate-pulse" style="animation-duration: 10s;"></div>
+</div>
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-full p-container-padding bg-surface-container dark:bg-surface-container fixed left-0 top-0 w-64 rounded-r-xl bg-gradient-to-b from-primary-container to-surface-container-lowest backdrop-blur-xl border-r border-white/10 shadow-[0_0_20px_rgba(16,185,129,0.1)] z-50">
+<div class="mb-10">
+<h1 class="font-headline-lg text-headline-lg font-bold text-secondary tracking-tight">PLANTTALK AI</h1>
+<p class="font-label-mono text-label-mono text-on-surface-variant mt-1">Living Intelligence</p>
+</div>
+<div class="flex-1 flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="font-label-mono text-label-mono">Home</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">medical_services</span>
+<span class="font-label-mono text-label-mono">Doctor</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary bg-white/10 rounded-lg border-l-2 border-secondary scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<span class="font-label-mono text-label-mono">India</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">groups</span>
+<span class="font-label-mono text-label-mono">Community</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-label-mono text-label-mono">Settings</span>
+</a>
+</div>
+<div class="mt-auto pt-6">
+<button class="w-full py-3 px-4 rounded-lg bg-secondary text-on-primary-fixed font-label-mono text-label-mono font-bold hover:bg-secondary-fixed transition-colors shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                Upgrade to Pro
+            </button>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col md:ml-64 min-h-screen">
+<!-- TopAppBar -->
+<header class="hidden md:flex justify-between items-center px-margin-desktop bg-transparent fixed top-0 right-0 w-[calc(100%-16rem)] h-20 backdrop-blur-md border-b border-white/5 z-40">
+<div class="font-headline-lg text-headline-lg font-black text-secondary">PlantTalk AI</div>
+<div class="flex items-center gap-6">
+<!-- Search -->
+<div class="relative glass-panel rounded-full flex items-center px-4 py-2 border-b border-white/20 focus-within:border-secondary transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+<input class="bg-transparent border-none text-on-surface font-body-md text-body-md focus:ring-0 placeholder-on-surface-variant w-48" placeholder="Search parameters..." type="text"/>
+</div>
+<!-- Actions -->
+<button class="text-on-surface-variant hover:text-secondary transition-colors hover:translate-y-[-1px] transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-secondary transition-colors hover:translate-y-[-1px] transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 p-margin-mobile md:p-margin-desktop pt-24 md:pt-28">
+<!-- Banner -->
+<div class="w-full rounded-xl overflow-hidden relative h-64 mb-10 border border-white/10 shadow-[0_0_30px_rgba(16,185,129,0.1)]">
+<div class="absolute inset-0 bg-gradient-to-r from-primary-container via-surface-container-high to-surface-container opacity-90 z-10"></div>
+<div class="absolute inset-0 z-20 flex flex-col justify-center p-8 md:p-12">
+<h2 class="font-display-lg text-display-lg text-white mb-2 tracking-tight">IN India Intelligence</h2>
+<p class="font-body-md text-body-md text-primary opacity-80 uppercase tracking-widest">Multi-Model Regional Aggregate</p>
+</div>
+</div>
+<!-- Accordion List -->
+<div class="grid grid-cols-1 gap-4 max-w-5xl mx-auto">
+<!-- Region: Northwest -->
+<div class="glass-panel rounded-xl overflow-hidden cursor-pointer group" onclick="toggleAccordion(this)">
+<div class="p-6 flex justify-between items-center border-b border-transparent group-hover:border-white/5 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center border border-white/10 group-hover:border-secondary transition-colors">
+<span class="material-symbols-outlined text-secondary">explore</span>
+</div>
+<div>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Northwest</h3>
+<p class="font-label-mono text-label-mono text-on-surface-variant mt-1">Avg Temp: 28°C</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant transform transition-transform duration-300 accordion-icon">expand_more</span>
+</div>
+<div class="accordion-content">
+<div class="accordion-inner bg-surface-container/50 px-6 py-0">
+<div class="py-6 grid grid-cols-2 gap-4 border-t border-white/5">
+<div>
+<p class="font-label-mono text-label-mono text-on-surface-variant">Avg NDVI</p>
+<p class="font-headline-lg text-headline-lg text-primary mt-1">0.62</p>
+</div>
+<div>
+<p class="font-label-mono text-label-mono text-on-surface-variant">Rainfall Anomaly</p>
+<p class="font-headline-lg text-headline-lg text-error mt-1">-12mm</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Region: Central -->
+<div class="glass-panel rounded-xl overflow-hidden cursor-pointer group" onclick="toggleAccordion(this)">
+<div class="p-6 flex justify-between items-center border-b border-transparent group-hover:border-white/5 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center border border-white/10 group-hover:border-secondary transition-colors">
+<span class="material-symbols-outlined text-secondary">adjust</span>
+</div>
+<div>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Central</h3>
+<p class="font-label-mono text-label-mono text-on-surface-variant mt-1">Avg Temp: 30°C</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant transform transition-transform duration-300 accordion-icon">expand_more</span>
+</div>
+<div class="accordion-content">
+<div class="accordion-inner bg-surface-container/50 px-6 py-0">
+<div class="py-6 grid grid-cols-2 gap-4 border-t border-white/5">
+<div>
+<p class="font-label-mono text-label-mono text-on-surface-variant">Avg NDVI</p>
+<p class="font-headline-lg text-headline-lg text-primary mt-1">0.58</p>
+</div>
+<div>
+<p class="font-label-mono text-label-mono text-on-surface-variant">Rainfall Anomaly</p>
+<p class="font-headline-lg text-headline-lg text-secondary mt-1">+5mm</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+        function toggleAccordion(element) {
+            const content = element.querySelector('.accordion-content');
+            const icon = element.querySelector('.accordion-icon');
+            const isOpen = content.classList.contains('open');
+            
+            // Close all
+            document.querySelectorAll('.accordion-content').forEach(el => el.classList.remove('open'));
+            document.querySelectorAll('.accordion-icon').forEach(el => el.style.transform = 'rotate(0deg)');
+            
+            if (!isOpen) {
+                content.classList.add('open');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+    </script>
+</body></html>

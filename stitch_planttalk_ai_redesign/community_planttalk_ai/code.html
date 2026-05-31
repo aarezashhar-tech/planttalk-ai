@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PlantTalk AI - Farmer Community</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&amp;family=Inter:wght@400;500;600&amp;family=Geist:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-primary": "#3b674f",
+                      "on-primary-fixed": "#002112",
+                      "surface-container-lowest": "#051109",
+                      "secondary-container": "#00a572",
+                      "on-secondary-fixed": "#002113",
+                      "on-primary-container": "#86b598",
+                      "error-container": "#93000a",
+                      "surface": "#09160e",
+                      "on-error-container": "#ffdad6",
+                      "on-secondary-container": "#00311f",
+                      "surface-container-highest": "#2a382f",
+                      "on-primary-fixed-variant": "#234f38",
+                      "surface-dim": "#09160e",
+                      "on-tertiary-fixed": "#2a1700",
+                      "on-primary": "#073823",
+                      "surface-container": "#15221a",
+                      "on-secondary-fixed-variant": "#005236",
+                      "error": "#ffb4ab",
+                      "inverse-on-surface": "#26332a",
+                      "surface-variant": "#2a382f",
+                      "background": "#09160e",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "primary-container": "#1a4731",
+                      "primary-fixed": "#bdeecf",
+                      "surface-container-low": "#111e16",
+                      "outline-variant": "#414943",
+                      "secondary": "#4edea3",
+                      "on-surface-variant": "#c1c9c1",
+                      "tertiary-fixed": "#ffddb8",
+                      "surface-bright": "#2f3c33",
+                      "tertiary-container": "#5a3700",
+                      "on-surface": "#d7e7d9",
+                      "on-secondary": "#003824",
+                      "outline": "#8b938c",
+                      "inverse-surface": "#d7e7d9",
+                      "tertiary": "#ffb95f",
+                      "secondary-fixed": "#6ffbbe",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "primary": "#a1d1b4",
+                      "primary-fixed-dim": "#a1d1b4",
+                      "on-tertiary-container": "#ec9700",
+                      "surface-container-high": "#202d24",
+                      "on-error": "#690005",
+                      "secondary-fixed-dim": "#4edea3",
+                      "surface-tint": "#a1d1b4",
+                      "on-tertiary": "#472a00",
+                      "on-background": "#d7e7d9"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-padding": "24px",
+                      "gutter": "16px",
+                      "base": "8px",
+                      "margin-mobile": "16px",
+                      "margin-desktop": "32px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "display-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-mono": [
+                              "Geist"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-mono": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        body {
+            background-color: #0F1C14;
+            color: #d7e7d9;
+            overflow-x: hidden;
+        }
+        
+        /* Animated Gradient Background */
+        .bg-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: radial-gradient(circle at 15% 50%, rgba(26, 71, 49, 0.4), transparent 50%),
+                        radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15), transparent 50%),
+                        radial-gradient(circle at 50% 80%, rgba(0, 165, 114, 0.2), transparent 50%);
+            background-color: #0F1C14;
+            animation: mesh-flow 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes mesh-flow {
+            0% { transform: scale(1) translate(0, 0); }
+            50% { transform: scale(1.1) translate(-2%, 2%); }
+            100% { transform: scale(1) translate(2%, -2%); }
+        }
+
+        /* Glassmorphism Classes */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top-color: rgba(255, 255, 255, 0.15);
+            border-left-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .glass-input {
+            background: rgba(0, 0, 0, 0.2);
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: border-color 0.3s ease;
+        }
+        
+        .glass-input:focus {
+            outline: none;
+            border-bottom: 1px solid #10B981;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.1);
+        }
+
+        .hover-tilt {
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+        }
+        
+        .hover-tilt:hover {
+            transform: translateY(-4px) rotateX(2deg) rotateY(-2deg);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(16, 185, 129, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Glow Effects */
+        .glow-accent {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+        
+        .pulse-glow {
+            animation: pulse-op 2s infinite;
+        }
+        
+        @keyframes pulse-op {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; text-shadow: 0 0 10px rgba(255, 185, 95, 0.8); }
+            100% { opacity: 0.7; }
+        }
+
+        /* Scroll Animations */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(16, 185, 129, 0.5);
+        }
+      </style>
+</head>
+<body class="antialiased min-h-screen font-body-md text-body-md">
+<div class="bg-mesh"></div>
+<!-- SideNavBar (from JSON, mapped style classes) -->
+<nav class="fixed left-0 top-0 h-full w-64 rounded-r-xl bg-gradient-to-b from-primary-container to-surface-container-lowest backdrop-blur-xl border-r border-white/10 shadow-[0_0_20px_rgba(16,185,129,0.1)] flex flex-col p-container-padding z-50 hidden md:flex">
+<!-- Brand / Header -->
+<div class="mb-10">
+<h1 class="font-headline-lg text-headline-lg font-bold text-secondary tracking-tight">PLANTTALK AI</h1>
+<p class="font-label-mono text-label-mono text-on-surface-variant mt-1">Living Intelligence</p>
+</div>
+<!-- Navigation Links -->
+<div class="flex flex-col gap-2 flex-grow">
+<!-- Home -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="font-label-mono text-label-mono">Home</span>
+</a>
+<!-- Doctor -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">medical_services</span>
+<span class="font-label-mono text-label-mono">Doctor</span>
+</a>
+<!-- India -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">location_on</span>
+<span class="font-label-mono text-label-mono">India</span>
+</a>
+<!-- Community (ACTIVE) -->
+<a class="flex items-center gap-3 px-4 py-3 text-secondary bg-white/10 rounded-lg border-l-2 border-secondary scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+<span class="font-label-mono text-label-mono">Community</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-label-mono text-label-mono">Settings</span>
+</a>
+</div>
+<!-- CTA -->
+<div class="mt-auto pt-6 border-t border-white/5">
+<button class="w-full py-3 px-4 bg-secondary text-on-secondary font-label-mono text-label-mono rounded-lg glow-accent hover:bg-secondary-fixed transition-colors font-bold">
+                Upgrade to Pro
+            </button>
+</div>
+</nav>
+<!-- TopAppBar (from JSON) -->
+<header class="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] h-20 backdrop-blur-md border-b border-white/5 flex justify-between items-center px-margin-mobile md:px-margin-desktop z-40">
+<div class="flex items-center gap-4">
+<!-- Mobile Menu Trigger (Visible only on md-) -->
+<button class="md:hidden text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg font-black text-secondary md:hidden">PlantTalk AI</h2>
+</div>
+<div class="flex items-center gap-6">
+<!-- Search Bar on Right -->
+<div class="relative hidden sm:block">
+<input class="glass-input pl-10 pr-4 py-2 rounded-full w-64 text-on-surface font-body-md text-body-md placeholder-on-surface-variant" placeholder="Search community..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-sm">search</span>
+</div>
+<!-- Trailing Icons -->
+<div class="flex items-center gap-4 text-on-surface-variant">
+<button class="hover:text-secondary hover:translate-y-[-1px] transition-transform">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="hover:text-secondary hover:translate-y-[-1px] transition-transform">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-20 md:pb-10 px-margin-mobile md:px-margin-desktop md:ml-64 min-h-screen">
+<!-- Header Section -->
+<div class="mb-10 fade-up">
+<h1 class="font-display-lg text-display-lg text-on-surface flex items-center gap-4">
+                👨‍🌾 Farmer Community
+            </h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 max-w-2xl">
+                Share tips, ask questions, help each other grow. Connect with thousands of precision agriculture experts globally.
+            </p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter md:gap-container-padding">
+<!-- Center Feed Column -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<!-- Composer -->
+<div class="glass-card rounded-xl p-6 fade-up">
+<div class="flex gap-4">
+<img alt="Farmer Avatar" class="w-12 h-12 rounded-full border border-secondary" data-alt="A detailed, hyper-realistic avatar portrait of a modern agricultural professional. The subject has weathered features and a gentle smile, wearing a high-tech smart-fabric cap. The background is a blurred, luminous greenhouse setting with a futuristic glassmorphism UI overlay aesthetic, bathed in soft emerald and white light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDO8Fl9icGWoSawTxg3rQXydfXvr2qenyygUfBu0-O1hcON0nyPAcYudGCtIvmlyzzCe9ZJ0y_c1Fy43m0JBMCuSh3Pu8HQlqpNe_Ro7oRdjq9aFp9WNPwyYxv5sEqnh8azjGsrOXTYUgNeuLURZiKGEtk5t5hIjf97PMdyaHXjGMWg93m5-rfJVR_PqsmU3Uw5afksNG5kJC5l_c_WTgY9M1COQLIADfF_3uq6-yt3RB8dQBVctOQwIw7apHcBEcPKLKBp2vnXWHu4"/>
+<div class="flex-grow flex items-center bg-surface-container-low rounded-lg border border-white/5 pr-2 focus-within:border-secondary focus-within:shadow-[0_0_10px_rgba(16,185,129,0.2)] transition-all">
+<input class="w-full bg-transparent border-none text-on-surface px-4 py-3 focus:ring-0 font-body-md text-body-md placeholder-on-surface-variant" placeholder="Share your farming experience..." type="text"/>
+<button class="w-8 h-8 rounded-full bg-secondary text-on-secondary flex items-center justify-center hover:bg-secondary-fixed transition-colors">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'wght' 600;">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Filter Tabs -->
+<div class="flex overflow-x-auto pb-2 gap-3 hide-scrollbar fade-up" style="scrollbar-width: none;">
+<button class="whitespace-nowrap px-6 py-2 rounded-full bg-primary-container text-primary font-label-mono text-label-mono border border-primary/30">All</button>
+<button class="whitespace-nowrap px-6 py-2 rounded-full glass-card text-on-surface-variant font-label-mono text-label-mono hover:text-on-surface transition-colors">Tips</button>
+<button class="whitespace-nowrap px-6 py-2 rounded-full glass-card text-on-surface-variant font-label-mono text-label-mono hover:text-on-surface transition-colors">Questions</button>
+<button class="whitespace-nowrap px-6 py-2 rounded-full glass-card text-on-surface-variant font-label-mono text-label-mono hover:text-on-surface transition-colors">Diseases</button>
+</div>
+<!-- Feed Cards -->
+<div class="flex flex-col gap-6">
+<!-- Post 1 (Question) -->
+<div class="glass-card rounded-xl p-6 hover-tilt fade-up">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-3 items-center">
+<img alt="Avatar" class="w-10 h-10 rounded-full" data-alt="A portrait of a young female agronomist with a focused expression, wearing technical outdoor gear. The lighting is bright and clear, indicative of a futuristic laboratory setting. The overall style matches a modern, high-tech digital interface with deep dark tones and bright green accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeqfWuRXmXB3eZrikv0q2Qgl38U9nxiqDgVjhoaGLlzHAFAmcPeb9CeZmD-WgmNGhZ0NFwLRnVE1y4-1947jgcfq8cekn8eeOZVTNsc4n-YesJP-1IgryqhkjWB8I080i3kmYGP3Clg5Jf3nWrTWH0bfFSHer0_hscbV2auE7iyMXF9BtFiYuLsh_EOk29LPUjQo_pNFdPsMAJdbM0_jRhH6ubVFZH1XrUremUGwU1SFbZdOHrRNRr0ZeplIwkz-5sDasAPaHgbBRk"/>
+<div>
+<h4 class="font-label-mono text-label-mono text-on-surface font-bold">Rajesh Kumar</h4>
+<div class="flex items-center gap-2 text-on-surface-variant text-xs opacity-80 mt-0.5">
+<span class="material-symbols-outlined text-[14px]">location_on</span>
+<span>Punjab, India</span>
+<span>•</span>
+<span>2h ago</span>
+</div>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full bg-tertiary-container/40 text-tertiary border border-tertiary/20 font-label-mono text-[10px] uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">help</span> Question
+                            </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mb-4">
+                            Noticing yellowing on the lower leaves of my wheat crop, spreading upwards. Soil moisture is optimal and nitrogen was applied 2 weeks ago. Could this be a micronutrient deficiency or early signs of rust? Attached some sensor data.
+                        </p>
+<div class="flex items-center gap-4 text-on-surface-variant border-t border-white/5 pt-4 mt-2">
+<button class="flex items-center gap-1.5 hover:text-secondary transition-colors text-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">thumb_up</span> 24
+                            </button>
+<button class="flex items-center gap-1.5 hover:text-secondary transition-colors text-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">chat_bubble</span> 8
+                            </button>
+<span class="ml-auto font-label-mono text-xs px-2 py-1 bg-surface-container rounded text-primary">Crop: Wheat</span>
+</div>
+</div>
+<!-- Post 2 (Tip) -->
+<div class="glass-card rounded-xl p-6 hover-tilt fade-up">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-3 items-center">
+<img alt="Avatar" class="w-10 h-10 rounded-full border border-secondary" data-alt="Portrait of an experienced farmer with a weathered face, wearing a smart-visor. The scene is illuminated by holographic UI elements reflecting off his glasses. The mood is authoritative and visionary, set against a dark, blurred background with luminous emerald green mesh gradients indicative of a 'Living Technology' aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7hNr_ICiKNMzv8XbcCSYWesjS-OTWwrLfSTUsCYP-CUwwmr13Q4WOHF-H7j3eXrIhhL-P6SJZeoW51bOpj7l_OGdcbekVAAqG0n-Aqu7UVhMOMnMDCx_-ZFLqbYK-4hexAhY-Ut2L73iSrDaCaCPWbesSw4YbOLN8APM7Z5NfougZpGZKSsepxWQ8ZeZSxg9CMVQKTX0-rxpvBDGWk3mp_TgHh7TBYmhRTEgopLCSfVnpP6Ny-eswCmLinWayIgz7JGIfhSeClFop"/>
+<div>
+<h4 class="font-label-mono text-label-mono text-on-surface font-bold flex items-center gap-1">
+                                        Sarah Jenkins <span class="material-symbols-outlined text-secondary text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</h4>
+<div class="flex items-center gap-2 text-on-surface-variant text-xs opacity-80 mt-0.5">
+<span class="material-symbols-outlined text-[14px]">location_on</span>
+<span>California, USA</span>
+<span>•</span>
+<span>5h ago</span>
+</div>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full bg-primary-container/40 text-primary border border-primary/20 font-label-mono text-[10px] uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">lightbulb</span> Tip
+                            </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mb-4">
+                            We've optimized our drip irrigation scheduling using the new AI canopy temperature sensors. By delaying the morning cycle by exactly 45 minutes based on the predictive dew point model, we've cut water usage by 12% without yield loss. Highly recommend checking the new dashboard widget.
+                        </p>
+<div class="flex items-center gap-4 text-on-surface-variant border-t border-white/5 pt-4 mt-2">
+<button class="flex items-center gap-1.5 hover:text-secondary transition-colors text-sm text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">thumb_up</span> 156
+                            </button>
+<button class="flex items-center gap-1.5 hover:text-secondary transition-colors text-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">chat_bubble</span> 32
+                            </button>
+<span class="ml-auto font-label-mono text-xs px-2 py-1 bg-surface-container rounded text-primary">Crop: Almonds</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Sidebar / Trending Column -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Trending Card -->
+<div class="glass-card rounded-xl p-6 fade-up">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary pulse-glow" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+                        TRENDING IN YOUR REGION
+                    </h3>
+<div class="flex flex-col gap-5">
+<!-- Trending Item 1 -->
+<div class="group cursor-pointer">
+<div class="flex gap-3">
+<div class="mt-1">
+<span class="material-symbols-outlined text-tertiary text-lg" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</div>
+<div>
+<h4 class="font-body-md text-sm font-semibold text-on-surface group-hover:text-secondary transition-colors line-clamp-2">
+                                        Unexpected aphid swarm reported in Sector 4. Preventative spraying advised.
+                                    </h4>
+<div class="flex items-center gap-3 mt-1.5 text-on-surface-variant text-xs font-label-mono">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">thumb_up</span> 342</span>
+<span>•</span>
+<span>Alert</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Trending Item 2 -->
+<div class="group cursor-pointer border-t border-white/5 pt-4">
+<div class="flex gap-3">
+<div class="mt-1">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+</div>
+<div>
+<h4 class="font-body-md text-sm font-semibold text-on-surface group-hover:text-secondary transition-colors line-clamp-2">
+                                        Top 5 organic fungicide mixtures for high-humidity greenhouse environments.
+                                    </h4>
+<div class="flex items-center gap-3 mt-1.5 text-on-surface-variant text-xs font-label-mono">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">thumb_up</span> 289</span>
+<span>•</span>
+<span>Guide</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Trending Item 3 -->
+<div class="group cursor-pointer border-t border-white/5 pt-4">
+<div class="flex gap-3">
+<div class="mt-1">
+<span class="material-symbols-outlined text-error text-lg" style="font-variation-settings: 'FILL' 1;">coronavirus</span>
+</div>
+<div>
+<h4 class="font-body-md text-sm font-semibold text-on-surface group-hover:text-secondary transition-colors line-clamp-2">
+                                        Identifying early stage Blight using multispectral drone imagery.
+                                    </h4>
+<div class="flex items-center gap-3 mt-1.5 text-on-surface-variant text-xs font-label-mono">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">thumb_up</span> 156</span>
+<span>•</span>
+<span>Disease</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Mobile Bottom NavBar (Visible only on md-) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full glass-card border-t border-white/5 px-2 py-3 z-50 flex justify-around items-center">
+<a class="flex flex-col items-center gap-1 p-2 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="font-label-mono text-[10px]">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 0;">medical_services</span>
+<span class="font-label-mono text-[10px]">Doctor</span>
+</a>
+<!-- Active -->
+<a class="flex flex-col items-center gap-1 p-2 text-secondary relative" href="#">
+<div class="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-secondary rounded-full glow-accent"></div>
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">groups</span>
+<span class="font-label-mono text-[10px] font-bold">Community</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-label-mono text-[10px]">Settings</span>
+</a>
+</nav>
+<script>
+        // Intersection Observer for fade-up animations
+        document.addEventListener("DOMContentLoaded", () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target); // Stop observing once visible
+                    }
+                });
+            }, observerOptions);
+
+            const fadeElements = document.querySelectorAll('.fade-up');
+            fadeElements.forEach((el, index) => {
+                // Add a slight delay based on index for a cascading effect
+                el.style.transitionDelay = `${index * 0.1}s`;
+                observer.observe(el);
+            });
+        });
+    </script>
+</body></html>
