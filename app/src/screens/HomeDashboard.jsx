@@ -44,14 +44,15 @@ export default function HomeDashboard() {
       });
   }, [fetchWeatherForLocation]);
 
-  const lat = data.profile?.latitude || 28.6139;
-  const lon = data.profile?.longitude || 77.2090;
+  const storedLocation = JSON.parse(localStorage.getItem('selectedLocation'));
+  const lat = storedLocation?.latitude || data.profile?.latitude || 28.6139;
+  const lon = storedLocation?.longitude || data.profile?.longitude || 77.2090;
 
   useEffect(() => {
     if (lat && lon) {
       console.log(`[Soil API] Fetching soil data for lat=${lat}, lon=${lon}`);
       setSoilLoading(true);
-      fetch(`${import.meta.env.VITE_API_URL || ''}https://planttalk-ai.onrender.com/api/soil?lat=${lat}&lon=${lon}`)
+      fetch(`https://planttalk-ai.onrender.com/api/soil?lat=${lat}&lon=${lon}`)
         .then(res => res.json())
         .then(data => {
           console.log('[Soil API] Response:', data);
@@ -67,6 +68,7 @@ export default function HomeDashboard() {
 
   const handleLocationSelected = async (locationData) => {
     try {
+      localStorage.setItem('selectedLocation', JSON.stringify(locationData));
       const result = await fetchWeatherForLocation(
         locationData.latitude,
         locationData.longitude,

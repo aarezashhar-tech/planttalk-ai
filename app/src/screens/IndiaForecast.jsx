@@ -7,17 +7,26 @@ export default function IndiaForecast() {
   const [loading, setLoading] = useState(true);
   const [expandedRegion, setExpandedRegion] = useState(null);
 
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL || ''}https://planttalk-ai.onrender.com/api/india-forecast`)
-      .then(res => res.json())
+  const fetchForecast = () => {
+    setLoading(true);
+    fetch(`https://planttalk-ai.onrender.com/api/india-forecast`)
+      .then(res => {
+        if (!res.ok) throw new Error("Server Error");
+        return res.json();
+      })
       .then(data => {
         setForecastData(data);
         setLoading(false);
       })
       .catch(err => {
         console.error("Failed to fetch regional forecast", err);
+        setForecastData({ error: true });
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchForecast();
   }, []);
 
   const toggleAccordion = (regionName) => {
@@ -25,14 +34,22 @@ export default function IndiaForecast() {
   };
 
   if (loading) return (
-    <div className="flex items-center justify-center h-screen bg-[#0F1C14]">
-      <div className="text-secondary font-medium animate-pulse">Loading IMD Ensemble Data...</div>
+    <div className="flex flex-col items-center justify-center h-screen bg-[#0F1C14] space-y-6">
+      <div className="w-12 h-12 border-4 border-white/10 border-t-secondary rounded-full animate-spin"></div>
+      <div className="text-secondary font-medium animate-pulse text-center">
+        <p>Waking up server & fetching IMD Ensemble Data...</p>
+        <p className="text-sm text-gray-100 mt-2">(Free tier backends may take 50s+ to respond)</p>
+      </div>
     </div>
   );
   
   if (!forecastData || forecastData.error) return (
-    <div className="flex items-center justify-center h-screen bg-[#0F1C14]">
+    <div className="flex flex-col items-center justify-center h-screen bg-[#0F1C14] space-y-4">
       <div className="text-error font-medium">Failed to sync regional data.</div>
+      <button onClick={fetchForecast} className="px-6 py-2.5 bg-error/10 hover:bg-error/20 text-error border border-error/30 rounded-lg transition-colors flex items-center gap-2">
+        <span className="material-icons text-sm">refresh</span>
+        Retry Connection
+      </button>
     </div>
   );
 
