@@ -18,12 +18,7 @@ database.init_db()
 
 class APICallHandler(http.server.BaseHTTPRequestHandler):
     def send_cors_headers(self):
-        origin = self.headers.get('Origin', '')
-        allowed_origins = ['https://planttalk-ai-5e770.web.app', 'http://localhost:5173']
-        if origin in allowed_origins:
-            self.send_header('Access-Control-Allow-Origin', origin)
-        else:
-            self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept')
 

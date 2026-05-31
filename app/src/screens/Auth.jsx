@@ -30,11 +30,14 @@ export const Auth = ({ setSession, onLogin, setCurrentScreen }) => {
 
     setLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}https://planttalk-ai.onrender.com/api/auth`, {
+      const res = await fetch(`https://planttalk-ai.onrender.com/api/auth`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ provider: 'gmail', contact: email })
       });
+      if (!res.ok) {
+        throw new Error(`Server returned status: ${res.status} ${res.statusText}`);
+      }
       const data = await res.json();
       if (data.success) {
         data.contact = email;
@@ -44,9 +47,11 @@ export const Auth = ({ setSession, onLogin, setCurrentScreen }) => {
         localStorage.setItem('planttalk_session', JSON.stringify(data));
         if (setSession) setSession(data);
         window.location.href = '/';
+      } else {
+        console.error('Backend authentication failed:', data);
       }
     } catch (e) {
-      console.warn('Backend err:', e.message);
+      console.error('Backend error during Google Sign-In:', e.message);
     }
     setLoading(false);
   };
