@@ -74,7 +74,7 @@ export const PlantDoctor = ({ userProfile }) => {
       const base64Image = await fileToBase64(imageFile);
       const mimeType = imageFile.type || 'image/jpeg';
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/diagnose`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || ''}https://planttalk-ai.onrender.com/api/diagnose`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -33,7 +33,7 @@ export const ForecastPest = ({ backendData, userProfile, locationForecast }) => 
       }
       
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/forecast?user_id=${userId}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL || ''}https://planttalk-ai.onrender.com/api/forecast?user_id=${userId}`);
         const data = await response.json();
         setForecastData(data.forecast || []);
       } catch (e) {

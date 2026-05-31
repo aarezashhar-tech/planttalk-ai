@@ -33,7 +33,7 @@ export const Onboarding = ({ onComplete }) => {
 
       // Try to sync with backend (non-blocking)
       try {
-        await fetch(`${import.meta.env.VITE_API_URL || ''}/api/profile`, {
+        await fetch(`${import.meta.env.VITE_API_URL || ''}https://planttalk-ai.onrender.com/api/profile`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(finalProfile)

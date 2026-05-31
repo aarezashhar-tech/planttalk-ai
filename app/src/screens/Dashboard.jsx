@@ -18,7 +18,7 @@ export const Dashboard = ({ backendData, userProfile, onLocationSelected, locati
   useEffect(() => {
     if (lat && lon) {
       setSoilLoading(true);
-      fetch(`${import.meta.env.VITE_API_URL || ''}/api/soil?lat=${lat}&lon=${lon}`)
+      fetch(`${import.meta.env.VITE_API_URL || ''}https://planttalk-ai.onrender.com/api/soil?lat=${lat}&lon=${lon}`)
         .then(res => res.json())
         .then(data => {
           setSoilData(data);

@@ -5,9 +5,7 @@ export const Auth = ({ setSession, onLogin, setCurrentScreen }) => {
   const { t } = useTranslation();
   
   const [sessionData, setSessionData] = useState(null);
-  const [view, setView] = useState('options'); // 'options', 'phone', 'otp', 'returning'
-  const [contact, setContact] = useState('');
-  const [otp, setOtp] = useState('');
+  const [view, setView] = useState('options'); // 'options', 'returning'
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -32,7 +30,7 @@ export const Auth = ({ setSession, onLogin, setCurrentScreen }) => {
 
     setLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/auth`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}https://planttalk-ai.onrender.com/api/auth`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ provider: 'gmail', contact: email })
@@ -44,8 +42,8 @@ export const Auth = ({ setSession, onLogin, setCurrentScreen }) => {
         data.picture = picture;
         data.auth_provider = 'gmail';
         localStorage.setItem('planttalk_session', JSON.stringify(data));
-        setSession(data);
-        setCurrentScreen('onboarding');
+        if (setSession) setSession(data);
+        window.location.href = '/';
       }
     } catch (e) {
       console.warn('Backend err:', e.message);
@@ -103,71 +101,6 @@ export const Auth = ({ setSession, onLogin, setCurrentScreen }) => {
     setView('options');
   };
 
-  const submitPhone = async () => {
-    if (!contact) return;
-    setLoading(true);
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/auth`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ provider: 'phone', contact })
-      });
-      const data = await res.json();
-      if (data.status === 'otp_sent') {
-        setView('otp');
-      }
-    } catch (e) {
-      console.warn('Backend err:', e.message);
-    }
-    setLoading(false);
-  };
-
-  const submitOtp = async () => {
-    if (!otp) return;
-    setLoading(true);
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/auth`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ provider: 'phone', contact, otp })
-      });
-      const data = await res.json();
-      if (data.success) {
-        localStorage.setItem('planttalk_session', JSON.stringify(data));
-        setSession(data);
-        setCurrentScreen('onboarding');
-      }
-    } catch (e) {
-      console.warn('Backend err:', e.message);
-    }
-    setLoading(false);
-  };
-
-  const submitGuest = () => {
-    const guestSession = { success: true, contact: 'Guest User', user_id: 'guest_123' };
-    const guestProfile = {
-      farmerName: 'Guest Farmer',
-      crop: 'Tomato',
-      location: 'Coimbatore',
-      state: 'Tamil Nadu',
-      latitude: 11.0168,
-      longitude: 76.9558,
-      farmSize: 2,
-      growthStage: 'Vegetative',
-      sowDate: new Date().toISOString()
-    };
-    
-    localStorage.setItem('planttalk_session', JSON.stringify(guestSession));
-    localStorage.setItem('userProfile', JSON.stringify(guestProfile));
-    
-    if (setSession) setSession(guestSession);
-    if (onLogin) {
-      onLogin(guestProfile);
-    } else {
-      window.location.href = '/';
-    }
-  };
-
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 pb-24 text-on-background font-body">
       <div className="w-full max-w-md text-center space-y-8 animate-in fade-in zoom-in duration-500">
@@ -194,55 +127,8 @@ export const Auth = ({ setSession, onLogin, setCurrentScreen }) => {
 
           {view === 'options' && (
             <>
-              <button onClick={() => setView('phone')} className="w-full bg-surface-variant/50 border border-outline-variant text-gray-100 py-4 rounded-xl font-medium transition-colors hover:bg-surface-variant">
-                {t('Login with Mobile (OTP)')}
-              </button>
-              
               <div id="google-signIn-btn" className="w-full flex justify-center mt-2"></div>
-              
-              <div className="relative flex items-center py-2">
-                <div className="flex-grow border-t border-outline-variant/50"></div>
-                <span className="flex-shrink-0 mx-4 text-gray-100 text-sm">or</span>
-                <div className="flex-grow border-t border-outline-variant/50"></div>
-              </div>
-              
-              <button onClick={submitGuest} className="w-full bg-slate-800 text-white py-4 rounded-xl font-bold transition-colors hover:bg-slate-700 shadow-md">
-                {t('Continue as Guest')}
-              </button>
             </>
-          )}
-
-          {view === 'phone' && (
-            <div className="space-y-4">
-              <input 
-                type="tel" 
-                placeholder="Phone Number" 
-                className="w-full bg-surface p-4 rounded-xl border border-outline-variant text-white"
-                value={contact}
-                onChange={e => setContact(e.target.value)}
-              />
-              <button onClick={submitPhone} disabled={loading} className="w-full btn-primary py-4 rounded-xl">
-                {loading ? 'Sending...' : 'Send OTP'}
-              </button>
-              <button onClick={() => setView('options')} className="w-full text-gray-100 text-sm mt-2">Back</button>
-            </div>
-          )}
-
-          {view === 'otp' && (
-            <div className="space-y-4">
-              <input 
-                type="text" 
-                placeholder="4-digit OTP" 
-                maxLength="4"
-                className="w-full bg-surface p-4 rounded-xl border border-outline-variant text-white text-center tracking-[1em] font-bold"
-                value={otp}
-                onChange={e => setOtp(e.target.value)}
-              />
-              <button onClick={submitOtp} disabled={loading} className="w-full btn-primary py-4 rounded-xl">
-                {loading ? 'Verifying...' : 'Verify OTP'}
-              </button>
-              <button onClick={() => setView('phone')} className="w-full text-gray-100 text-sm mt-2">Back</button>
-            </div>
           )}
         </div>
       </div>

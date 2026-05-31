@@ -37,7 +37,7 @@ export const Settings = ({ userProfile, onProfileUpdate, onLocationSelected }) =
     localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
     
     try {
-      await fetch(`${import.meta.env.VITE_API_URL || ''}/api/profile`, {
+      await fetch(`${import.meta.env.VITE_API_URL || ''}https://planttalk-ai.onrender.com/api/profile`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedProfile)

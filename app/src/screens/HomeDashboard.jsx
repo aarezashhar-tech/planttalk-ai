@@ -17,7 +17,7 @@ export default function HomeDashboard() {
     const userId = session.user_id || 1;
     const storedLocation = JSON.parse(localStorage.getItem('selectedLocation'));
 
-    fetch(`${import.meta.env.VITE_API_URL || ''}/api/insights?user_id=${userId}`)
+    fetch(`${import.meta.env.VITE_API_URL || ''}https://planttalk-ai.onrender.com/api/insights?user_id=${userId}`)
       .then(res => res.json())
       .then(async resData => {
         if (storedLocation) {
@@ -51,7 +51,7 @@ export default function HomeDashboard() {
     if (lat && lon) {
       console.log(`[Soil API] Fetching soil data for lat=${lat}, lon=${lon}`);
       setSoilLoading(true);
-      fetch(`${import.meta.env.VITE_API_URL || ''}/api/soil?lat=${lat}&lon=${lon}`)
+      fetch(`${import.meta.env.VITE_API_URL || ''}https://planttalk-ai.onrender.com/api/soil?lat=${lat}&lon=${lon}`)
         .then(res => res.json())
         .then(data => {
           console.log('[Soil API] Response:', data);

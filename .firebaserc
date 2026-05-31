@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "firebase deploy --only hosting": "planttalk-ai-5e770"
+  },
+  "targets": {},
+  "etags": {}
+}

@@ -16,7 +16,7 @@ export const useForecast = (userId) => {
         setIsLoading(true);
         setError(null);
         const response = await fetch(
-          `/api/forecast?user_id=${userId}`
+          `https://planttalk-ai.onrender.com/api/forecast?user_id=${userId}`
         );
         if (!response.ok) throw new Error(`Server error: ${response.status}`);
         const data = await response.json();

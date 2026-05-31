@@ -8,7 +8,7 @@ export default function IndiaForecast() {
   const [expandedRegion, setExpandedRegion] = useState(null);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL || ''}/api/india-forecast`)
+    fetch(`${import.meta.env.VITE_API_URL || ''}https://planttalk-ai.onrender.com/api/india-forecast`)
       .then(res => res.json())
       .then(data => {
         setForecastData(data);
