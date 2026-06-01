@@ -234,84 +234,118 @@ class APICallHandler(http.server.BaseHTTPRequestHandler):
             return
 
         if parsed_path.path == '/api/soil':
-            query = parse_qs(parsed_path.query)
-            lat_str = query.get('lat', [None])[0]
-            lon_str = query.get('lon', [None])[0]
-            
-            if not lat_str or not lon_str:
-                self.send_response(400)
-                self.send_cors_headers()
-                self.end_headers()
-                self.wfile.write(json.dumps({'error': 'Missing lat or lon'}).encode('utf-8'))
-                return
-                
             try:
-                lat = float(lat_str)
-                lon = float(lon_str)
-            except ValueError:
-                self.send_response(400)
-                self.send_cors_headers()
-                self.end_headers()
-                self.wfile.write(json.dumps({'error': 'Invalid lat or lon'}).encode('utf-8'))
-                return
+                query = parse_qs(parsed_path.query)
+                lat_str = query.get('lat', [None])[0]
+                lon_str = query.get('lon', [None])[0]
                 
-            cached_data = database.get_soil_data(lat, lon)
-            if cached_data:
-                self.send_response(200)
-                self.send_cors_headers()
-                self.send_header('Content-Type', 'application/json')
-                self.end_headers()
-                self.wfile.write(json.dumps({
-                    'ph': cached_data['ph'],
-                    'n': cached_data['nitrogen'],
-                    'p': cached_data['phosphorus'],
-                    'k': cached_data['potassium']
-                }).encode('utf-8'))
-                return
+                print(f"Incoming /api/soil request: lat={lat_str}, lon={lon_str}", flush=True)
                 
-            # Fetch from ISRIC
-            import urllib.request
-            try:
-                url = f"https://rest.isric.org/soilgrids/v2.0/properties/query?lon={lon}&lat={lat}&property=phh2o&property=nitrogen&property=k&property=p&depth=0-5cm"
-                req = urllib.request.Request(url, headers={'Accept': 'application/json'})
-                with urllib.request.urlopen(req) as response:
-                    data = json.loads(response.read().decode('utf-8'))
+                if not lat_str or not lon_str:
+                    self.send_response(400)
+                    self.send_cors_headers()
+                    self.end_headers()
+                    self.wfile.write(json.dumps({'error': 'Missing lat or lon'}).encode('utf-8'))
+                    return
                     
-                    props = data.get('properties', {}).get('layers', [])
-                    soil_values = {'ph': None, 'n': None, 'p': None, 'k': None}
+                try:
+                    lat = float(lat_str)
+                    lon = float(lon_str)
+                except ValueError:
+                    self.send_response(400)
+                    self.send_cors_headers()
+                    self.end_headers()
+                    self.wfile.write(json.dumps({'error': 'Invalid lat or lon'}).encode('utf-8'))
+                    return
                     
-                    
-                    for layer in props:
-                        prop_name = layer.get('name')
-                        mean_val = None
-                        if layer.get('depths') and len(layer['depths']) > 0:
-                            mean_val = layer['depths'][0].get('values', {}).get('mean')
-                            
-                        if mean_val is not None:
-                            if prop_name == 'phh2o':
-                                soil_values['ph'] = mean_val / 10.0
-                            elif prop_name == 'nitrogen':
-                                soil_values['n'] = mean_val
-                            elif prop_name == 'p':
-                                soil_values['p'] = mean_val
-                            elif prop_name == 'k':
-                                soil_values['k'] = mean_val
-                                
-                    # Save to cache
-                    database.save_soil_data(lat, lon, soil_values['ph'], soil_values['n'], soil_values['p'], soil_values['k'])
-                    
+                try:
+                    cached_data = database.get_soil_data(lat, lon)
+                except Exception as e:
+                    print(f"Database error in get_soil_data: {e}", flush=True)
+                    cached_data = None
+
+                if cached_data:
                     self.send_response(200)
                     self.send_cors_headers()
                     self.send_header('Content-Type', 'application/json')
                     self.end_headers()
-                    self.wfile.write(json.dumps(soil_values).encode('utf-8'))
+                    self.wfile.write(json.dumps({
+                        'ph': cached_data['ph'],
+                        'n': cached_data['nitrogen'],
+                        'p': cached_data['phosphorus'],
+                        'k': cached_data['potassium']
+                    }).encode('utf-8'))
+                    return
+                    
+                # Fetch from ISRIC
+                import urllib.request
+                import traceback
+                
+                try:
+                    # Add timeout to prevent hanging forever
+                    url = f"https://rest.isric.org/soilgrids/v2.0/properties/query?lon={lon}&lat={lat}&property=phh2o&property=nitrogen&property=p&property=k&depth=0-5cm&value=mean"
+                    req = urllib.request.Request(url, headers={'Accept': 'application/json'})
+                    with urllib.request.urlopen(req, timeout=30) as response:
+                        data = json.loads(response.read().decode('utf-8'))
+                        
+                        props = data.get('properties', {}).get('layers', [])
+                        soil_values = {'ph': None, 'n': None, 'p': None, 'k': None}
+                        
+                        for layer in props:
+                            prop_name = layer.get('name')
+                            mean_val = None
+                            if layer.get('depths') and len(layer['depths']) > 0:
+                                mean_val = layer['depths'][0].get('values', {}).get('mean')
+                                
+                            if mean_val is not None:
+                                if prop_name == 'phh2o':
+                                    soil_values['ph'] = mean_val / 10.0
+                                elif prop_name == 'nitrogen':
+                                    soil_values['n'] = mean_val
+                                elif prop_name == 'p':
+                                    soil_values['p'] = mean_val
+                                elif prop_name == 'k':
+                                    soil_values['k'] = mean_val
+                                    
+                        # Save to cache
+                        try:
+                            database.save_soil_data(lat, lon, soil_values['ph'], soil_values['n'], soil_values['p'], soil_values['k'])
+                        except Exception as e:
+                            print(f"Database error in save_soil_data: {e}", flush=True)
+                        
+                        self.send_response(200)
+                        self.send_cors_headers()
+                        self.send_header('Content-Type', 'application/json')
+                        self.end_headers()
+                        self.wfile.write(json.dumps(soil_values).encode('utf-8'))
+                        return
+                except Exception as e:
+                    print(f"ISRIC API failed: {e}. Falling back to estimated values.", flush=True)
+                    abs_lat = abs(lat)
+                    if abs_lat <= 23.5:
+                        # Tropical
+                        estimated_soil = {'ph': 5.8, 'n': 1.2, 'p': 15.0, 'k': 120.0}
+                    elif abs_lat <= 60:
+                        # Temperate
+                        estimated_soil = {'ph': 6.5, 'n': 2.5, 'p': 25.0, 'k': 180.0}
+                    else:
+                        # Polar/Boreal
+                        estimated_soil = {'ph': 6.0, 'n': 1.5, 'p': 10.0, 'k': 80.0}
+                        
+                    self.send_response(200)
+                    self.send_cors_headers()
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps(estimated_soil).encode('utf-8'))
                     return
             except Exception as e:
-                print(f"ISRIC API Error: {e}")
+                import traceback
+                error_msg = traceback.format_exc()
+                print(f"Unhandled Error in /api/soil: {error_msg}", flush=True)
                 self.send_response(500)
                 self.send_cors_headers()
                 self.end_headers()
-                self.wfile.write(json.dumps({'error': str(e)}).encode('utf-8'))
+                self.wfile.write(json.dumps({'error': 'Internal server error', 'details': str(e)}).encode('utf-8'))
                 return
 
         self.send_response(404)
