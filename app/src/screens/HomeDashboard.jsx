@@ -25,7 +25,7 @@ export default function HomeDashboard() {
             const locRes = await fetchWeatherForLocation(
               storedLocation.latitude, 
               storedLocation.longitude, 
-              `${storedLocation.locationName}, ${storedLocation.state}`
+              `${storedLocation.locationName}${storedLocation.state ? `, ${storedLocation.state}` : ''}`
             );
             if (locRes) {
               resData.weather = locRes.weather;
@@ -34,7 +34,43 @@ export default function HomeDashboard() {
           } catch (e) {
             console.error("Location override failed on load:", e);
           }
+        } else {
+          // If no explicitly searched location, try to use the profile's string location
+          const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+          const profileLocation = userProfile.location || resData.profile?.location;
+          
+          if (profileLocation && profileLocation !== 'Unknown Location') {
+            try {
+              const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(profileLocation)}&count=1`);
+              const geoData = await geoRes.json();
+              
+              if (geoData.results && geoData.results.length > 0) {
+                const geo = geoData.results[0];
+                const locRes = await fetchWeatherForLocation(
+                  geo.latitude,
+                  geo.longitude,
+                  profileLocation
+                );
+                
+                if (locRes) {
+                  resData.weather = locRes.weather;
+                  resData.insights = locRes.insights;
+                  
+                  // Save this so we don't have to geocode again
+                  localStorage.setItem('selectedLocation', JSON.stringify({
+                    latitude: geo.latitude,
+                    longitude: geo.longitude,
+                    locationName: profileLocation,
+                    state: geo.admin1 || ''
+                  }));
+                }
+              }
+            } catch (e) {
+              console.error("Profile location geocode failed on load:", e);
+            }
+          }
         }
+        
         setData(resData);
         setLoading(false);
       })
@@ -118,6 +154,15 @@ export default function HomeDashboard() {
   const { weather, insights, profile } = data;
   const isFetchingLocation = searchLoading;
 
+  const sessionData = JSON.parse(localStorage.getItem('planttalk_session') || '{}');
+  const userProfileData = JSON.parse(localStorage.getItem('userProfile') || '{}');
+  const farmerName = sessionData.name || userProfileData.name || 'Farmer';
+  const cropName = userProfileData.crop || 'Not set';
+  
+  const displayLocation = weather?.locationName && weather.locationName !== 'Unknown Location'
+    ? weather.locationName
+    : (userProfileData.location || profile?.location || 'Unknown Location');
+
   return (
     <div className="text-white font-body-md text-body-md antialiased selection:bg-secondary selection:text-on-secondary min-h-screen bg-[#0F1C14]">
       {/* Animated Mesh Background */}
@@ -184,7 +229,7 @@ export default function HomeDashboard() {
             {/* Hero Section */}
             <section className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 animate-slide-up" style={{animationDelay: '0.1s', animationFillMode: 'both'}}>
               <div>
-                <h2 className="font-display-lg text-4xl font-bold text-white tracking-tight">Welcome back, {profile?.farmerName || 'Farmer'}! 🌾</h2>
+                <h2 className="font-display-lg text-4xl font-bold text-white tracking-tight">Welcome back, {farmerName}! 🌾</h2>
                 <p className="font-body-md text-body-md text-gray-100 mt-2 max-w-2xl">Here is your active field intelligence for today.</p>
               </div>
             </section>
@@ -219,7 +264,7 @@ export default function HomeDashboard() {
                   <div className="font-display-lg text-5xl font-bold text-white mt-2 mb-1 flex items-baseline gap-1">
                     <span>{weather?.temperature || '--'}</span>°C
                   </div>
-                  <p className="font-body-md text-body-md text-gray-100">{weather?.locationName || 'Unknown Location'}</p>
+                  <p className="font-body-md text-body-md text-gray-100">{displayLocation}</p>
                 </div>
                 <div className="flex gap-4 mt-4 pt-4 border-t border-white/10">
                   <div className="flex items-center gap-1">
@@ -265,7 +310,7 @@ export default function HomeDashboard() {
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between items-center border-b border-white/5 pb-2">
                     <span className="font-label-mono text-label-mono text-gray-100 text-xs">Crop</span>
-                    <span className="font-label-mono text-label-mono text-white font-semibold text-sm">{profile?.crop || 'Crop'}</span>
+                    <span className="font-label-mono text-label-mono text-white font-semibold text-sm">{cropName}</span>
                   </div>
                   <div className="flex justify-between items-center pt-1">
                     <span className="font-label-mono text-label-mono text-gray-100 text-xs">Next Watering</span>

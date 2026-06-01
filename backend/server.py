@@ -47,19 +47,15 @@ class APICallHandler(http.server.BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps({'status': 'otp_sent', 'message': 'Mock OTP sent'}).encode('utf-8'))
                 return
                 
-            import sqlite3
-            import database
-            conn = sqlite3.connect(database.DB_PATH)
-            c = conn.cursor()
-            c.execute('SELECT id FROM users WHERE auth_provider=? AND contact_info=?', (provider, contact))
-            row = c.fetchone()
-            if row:
-                user_id = row[0]
-            else:
-                c.execute('INSERT INTO users (auth_provider, contact_info) VALUES (?, ?)', (provider, contact))
-                user_id = c.lastrowid
-                conn.commit()
-            conn.close()
+            try:
+                user_id = database.get_or_create_user(provider, contact)
+            except Exception as e:
+                print(f"Error creating user: {e}", flush=True)
+                self.send_response(500)
+                self.send_cors_headers()
+                self.end_headers()
+                self.wfile.write(json.dumps({'success': False, 'error': 'Database error'}).encode('utf-8'))
+                return
             
             self.send_response(200)
             self.send_cors_headers()
@@ -153,7 +149,21 @@ class APICallHandler(http.server.BaseHTTPRequestHandler):
             crop = profile.get('crop', 'Crop')
             lang = profile.get('language_pref', 'English')
             
-            weather_result = weather_client.get_weather(location)
+            lat_str = query.get('lat', [None])[0]
+            lon_str = query.get('lon', [None])[0]
+            
+            if lat_str and lon_str:
+                try:
+                    lat = float(lat_str)
+                    lon = float(lon_str)
+                except ValueError:
+                    lat = 28.6139
+                    lon = 77.2090
+            else:
+                lat = 28.6139
+                lon = 77.2090
+            
+            weather_result = weather_client.get_weather(lat, lon, location)
             
             if weather_result.get("success") is False:
                 payload = {
@@ -204,7 +214,21 @@ class APICallHandler(http.server.BaseHTTPRequestHandler):
             profile = database.get_profile(user_id_int)
             location = profile.get('location', '') if profile else ''
             
-            forecast = weather_client.get_7_day_forecast(location)
+            lat_str = query.get('lat', [None])[0]
+            lon_str = query.get('lon', [None])[0]
+            
+            if lat_str and lon_str:
+                try:
+                    lat = float(lat_str)
+                    lon = float(lon_str)
+                except ValueError:
+                    lat = 28.6139
+                    lon = 77.2090
+            else:
+                lat = 28.6139
+                lon = 77.2090
+            
+            forecast = weather_client.get_7_day_forecast(lat, lon, location)
             
             self.send_response(200)
             self.send_cors_headers()
@@ -277,59 +301,59 @@ class APICallHandler(http.server.BaseHTTPRequestHandler):
                     }).encode('utf-8'))
                     return
                     
-                # Fetch from ISRIC
+                # Fetch from Open-Meteo and use climate fallback for soil nutrients
                 import urllib.request
                 import traceback
                 
                 try:
-                    # Add timeout to prevent hanging forever
-                    url = f"https://rest.isric.org/soilgrids/v2.0/properties/query?lon={lon}&lat={lat}&property=phh2o&property=nitrogen&property=p&property=k&depth=0-5cm&value=mean"
+                    url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=soil_moisture_0_1cm&current_weather=true"
                     req = urllib.request.Request(url, headers={'Accept': 'application/json'})
-                    with urllib.request.urlopen(req, timeout=30) as response:
-                        data = json.loads(response.read().decode('utf-8'))
+                    with urllib.request.urlopen(req, timeout=10) as response:
+                        om_data = json.loads(response.read().decode('utf-8'))
                         
-                        props = data.get('properties', {}).get('layers', [])
-                        soil_values = {'ph': None, 'n': None, 'p': None, 'k': None}
-                        
-                        for layer in props:
-                            prop_name = layer.get('name')
-                            mean_val = None
-                            if layer.get('depths') and len(layer['depths']) > 0:
-                                mean_val = layer['depths'][0].get('values', {}).get('mean')
-                                
-                            if mean_val is not None:
-                                if prop_name == 'phh2o':
-                                    soil_values['ph'] = mean_val / 10.0
-                                elif prop_name == 'nitrogen':
-                                    soil_values['n'] = mean_val
-                                elif prop_name == 'p':
-                                    soil_values['p'] = mean_val
-                                elif prop_name == 'k':
-                                    soil_values['k'] = mean_val
-                                    
-                        # Save to cache
-                        try:
-                            database.save_soil_data(lat, lon, soil_values['ph'], soil_values['n'], soil_values['p'], soil_values['k'])
-                        except Exception as e:
-                            print(f"Database error in save_soil_data: {e}", flush=True)
-                        
-                        self.send_response(200)
-                        self.send_cors_headers()
-                        self.send_header('Content-Type', 'application/json')
-                        self.end_headers()
-                        self.wfile.write(json.dumps(soil_values).encode('utf-8'))
-                        return
-                except Exception as e:
-                    print(f"ISRIC API failed: {e}. Falling back to estimated values.", flush=True)
+                    soil_moisture = None
+                    if 'hourly' in om_data and 'soil_moisture_0_1cm' in om_data['hourly']:
+                        moisture_list = om_data['hourly']['soil_moisture_0_1cm']
+                        for val in moisture_list:
+                            if val is not None:
+                                soil_moisture = val
+                                break
+
+                    # Use climate zone fallback for ph, n, p, k
                     abs_lat = abs(lat)
                     if abs_lat <= 23.5:
                         # Tropical
-                        estimated_soil = {'ph': 5.8, 'n': 1.2, 'p': 15.0, 'k': 120.0}
+                        soil_values = {'ph': 5.8, 'n': 1.2, 'p': 15.0, 'k': 120.0}
                     elif abs_lat <= 60:
                         # Temperate
-                        estimated_soil = {'ph': 6.5, 'n': 2.5, 'p': 25.0, 'k': 180.0}
+                        soil_values = {'ph': 6.5, 'n': 2.5, 'p': 25.0, 'k': 180.0}
                     else:
                         # Polar/Boreal
+                        soil_values = {'ph': 6.0, 'n': 1.5, 'p': 10.0, 'k': 80.0}
+                        
+                    if soil_moisture is not None:
+                        soil_values['moisture'] = soil_moisture
+                        
+                    # Save to cache
+                    try:
+                        database.save_soil_data(lat, lon, soil_values['ph'], soil_values['n'], soil_values['p'], soil_values['k'])
+                    except Exception as e:
+                        print(f"Database error in save_soil_data: {e}", flush=True)
+                        
+                    self.send_response(200)
+                    self.send_cors_headers()
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps(soil_values).encode('utf-8'))
+                    return
+                except Exception as e:
+                    print(f"Open-Meteo API failed: {e}. Falling back to estimated values.", flush=True)
+                    abs_lat = abs(lat)
+                    if abs_lat <= 23.5:
+                        estimated_soil = {'ph': 5.8, 'n': 1.2, 'p': 15.0, 'k': 120.0}
+                    elif abs_lat <= 60:
+                        estimated_soil = {'ph': 6.5, 'n': 2.5, 'p': 25.0, 'k': 180.0}
+                    else:
                         estimated_soil = {'ph': 6.0, 'n': 1.5, 'p': 10.0, 'k': 80.0}
                         
                     self.send_response(200)

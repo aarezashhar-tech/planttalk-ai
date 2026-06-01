@@ -1,26 +1,31 @@
-import sqlite3
 import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
-DB_PATH = os.path.join(os.path.dirname(__file__), 'planttalk.db')
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if not DATABASE_URL:
+    raise Exception('DATABASE_URL environment variable not set')
+
+def get_connection():
+    return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
 
 def init_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     c = conn.cursor()
     c.execute('''
         CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             auth_provider TEXT,
             contact_info TEXT
         )
     ''')
     c.execute('''
         CREATE TABLE IF NOT EXISTS profiles (
-            user_id INTEGER PRIMARY KEY,
+            user_id INTEGER PRIMARY KEY REFERENCES users (id),
             name TEXT,
             location TEXT,
             crop TEXT,
-            language_pref TEXT,
-            FOREIGN KEY (user_id) REFERENCES users (id)
+            language_pref TEXT
         )
     ''')
     c.execute('''
@@ -31,68 +36,82 @@ def init_db():
             nitrogen REAL,
             phosphorus REAL,
             potassium REAL,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (lat, lon)
+        )
+    ''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS diagnoses (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users (id),
+            image_result TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
     conn.commit()
     conn.close()
 
+def get_or_create_user(auth_provider="guest", contact_info=None):
+    conn = get_connection()
+    c = conn.cursor()
+    c.execute('SELECT id FROM users WHERE auth_provider=%s AND contact_info=%s', (auth_provider, contact_info))
+    row = c.fetchone()
+    if row:
+        user_id = row['id']
+    else:
+        c.execute('INSERT INTO users (auth_provider, contact_info) VALUES (%s, %s) RETURNING id', (auth_provider, contact_info))
+        user_id = c.fetchone()['id']
+        conn.commit()
+    conn.close()
+    return user_id
+
+def create_user(auth_provider="guest", contact_info=None):
+    return get_or_create_user(auth_provider, contact_info)
+
 def get_soil_data(lat, lon):
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
+    conn = get_connection()
     c = conn.cursor()
     # Cache for 30 days
-    c.execute("SELECT * FROM soil_cache WHERE lat=? AND lon=? AND timestamp >= datetime('now', '-30 days')", (lat, lon))
+    c.execute("SELECT * FROM soil_cache WHERE lat=%s AND lon=%s AND created_at >= NOW() - INTERVAL '30 days'", (lat, lon))
     row = c.fetchone()
     conn.close()
     return dict(row) if row else None
 
 def save_soil_data(lat, lon, ph, nitrogen, phosphorus, potassium):
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     c = conn.cursor()
     c.execute('''
-        INSERT INTO soil_cache (lat, lon, ph, nitrogen, phosphorus, potassium, timestamp)
-        VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-        ON CONFLICT(lat, lon) DO UPDATE SET
-            ph=excluded.ph,
-            nitrogen=excluded.nitrogen,
-            phosphorus=excluded.phosphorus,
-            potassium=excluded.potassium,
-            timestamp=CURRENT_TIMESTAMP
+        INSERT INTO soil_cache (lat, lon, ph, nitrogen, phosphorus, potassium, created_at)
+        VALUES (%s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+        ON CONFLICT (lat, lon) DO UPDATE SET
+            ph=EXCLUDED.ph,
+            nitrogen=EXCLUDED.nitrogen,
+            phosphorus=EXCLUDED.phosphorus,
+            potassium=EXCLUDED.potassium,
+            created_at=CURRENT_TIMESTAMP
     ''', (lat, lon, ph, nitrogen, phosphorus, potassium))
     conn.commit()
     conn.close()
 
-def create_user(auth_provider="guest", contact_info=None):
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute('INSERT INTO users (auth_provider, contact_info) VALUES (?, ?)', (auth_provider, contact_info))
-    user_id = c.lastrowid
-    conn.commit()
-    conn.close()
-    return user_id
-
 def save_profile(user_id, name, location, crop, language_pref):
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     c = conn.cursor()
     c.execute('''
         INSERT INTO profiles (user_id, name, location, crop, language_pref)
-        VALUES (?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s)
         ON CONFLICT(user_id) DO UPDATE SET
-            name=excluded.name,
-            location=excluded.location,
-            crop=excluded.crop,
-            language_pref=excluded.language_pref
+            name=EXCLUDED.name,
+            location=EXCLUDED.location,
+            crop=EXCLUDED.crop,
+            language_pref=EXCLUDED.language_pref
     ''', (user_id, name, location, crop, language_pref))
     conn.commit()
     conn.close()
 
 def get_profile(user_id):
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
+    conn = get_connection()
     c = conn.cursor()
-    c.execute('SELECT * FROM profiles WHERE user_id = ?', (user_id,))
+    c.execute('SELECT * FROM profiles WHERE user_id = %s', (user_id,))
     row = c.fetchone()
     conn.close()
     if row:
