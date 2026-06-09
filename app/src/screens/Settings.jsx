@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useTranslation } from '../contexts/LanguageContext';
 import { LocationSearch } from '../components/LocationSearch';
 import { TopNavbar } from '../components/TopNavbar';
@@ -12,18 +12,39 @@ export const Settings = ({ userProfile, onProfileUpdate, onLocationSelected }) =
   const [emailEnabled, setEmailEnabled] = useState(false);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
 
+  const fileInputRef = useRef(null);
+  const [avatarBase64, setAvatarBase64] = useState(userProfile?.avatar || null);
+
   const session = JSON.parse(localStorage.getItem('planttalk_session') || '{}');
   const isGoogle = session.auth_provider === 'gmail';
   const isGuest = session.user_id === 'guest_123';
 
   const displayName = isGoogle ? session.name : (isGuest ? 'Guest User' : farmerName);
   const displaySubtitle = isGoogle ? session.contact : (isGuest ? 'Guest User' : 'Lead Agronomist');
-  const displayAvatarUrl = isGoogle ? session.picture : null;
+  const displayAvatarUrl = avatarBase64 || (isGoogle ? session.picture : null);
   const initial = displayName ? displayName.charAt(0).toUpperCase() : 'A';
 
   const displayLocation = userProfile?.location
     ? `${userProfile.location}${userProfile.state ? ', ' + userProfile.state : ''}`
     : 'Unknown Location';
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        setAvatarBase64(base64String);
+        
+        const currentProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+        const updatedProfile = { ...currentProfile, ...userProfile, avatar: base64String };
+        localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
+        
+        if (onProfileUpdate) onProfileUpdate(updatedProfile);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSave = async (e) => {
     e?.preventDefault();
@@ -136,7 +157,17 @@ export const Settings = ({ userProfile, onProfileUpdate, onLocationSelected }) =
               <h2 className="font-headline-lg md:text-2xl text-xl font-bold text-white mb-1 truncate w-full text-center px-4">{displayName}</h2>
               <p className="font-label-mono text-secondary mb-6 tracking-widest uppercase text-xs truncate w-full px-4">{displaySubtitle}</p>
               
-              <button className="w-full py-2.5 px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 group">
+              <input 
+                type="file" 
+                accept="image/*" 
+                ref={fileInputRef} 
+                className="hidden" 
+                onChange={handleImageUpload} 
+              />
+              <button 
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full py-2.5 px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 group"
+              >
                 <span className="material-icons text-sm group-hover:text-secondary transition-colors">edit</span>
                 Edit Avatar
               </button>

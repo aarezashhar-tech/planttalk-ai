@@ -159,9 +159,16 @@ export default function HomeDashboard() {
   const farmerName = sessionData.name || userProfileData.name || 'Farmer';
   const cropName = userProfileData.crop || 'Not set';
   
-  const displayLocation = weather?.locationName && weather.locationName !== 'Unknown Location'
-    ? weather.locationName
-    : (userProfileData.location || profile?.location || 'Unknown Location');
+  let displayLocation = 'Unknown Location';
+  if (storedLocation && storedLocation.locationName) {
+    displayLocation = `${storedLocation.locationName}${storedLocation.state ? `, ${storedLocation.state}` : ''}`;
+  } else if (userProfileData.location && userProfileData.location !== 'Unknown Location') {
+    displayLocation = userProfileData.location;
+  } else if (profile?.location && profile.location !== 'Unknown Location') {
+    displayLocation = profile.location;
+  } else if (weather?.locationName && weather.locationName !== 'Unknown Location') {
+    displayLocation = weather.locationName;
+  }
 
   return (
     <div className="text-white font-body-md text-body-md antialiased selection:bg-secondary selection:text-on-secondary min-h-screen bg-[#0F1C14]">
@@ -240,7 +247,7 @@ export default function HomeDashboard() {
                 <div className="relative w-full max-w-md">
                    <LocationSearch 
                     onLocationSelected={handleLocationSelected} 
-                    currentLocation={weather?.locationName} 
+                    currentLocation={displayLocation} 
                   />
                 </div>
                 {isFetchingLocation && (

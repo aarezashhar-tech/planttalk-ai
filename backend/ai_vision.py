@@ -2,14 +2,16 @@ import urllib.request
 import urllib.error
 import json
 
-GEMINI_API_KEY = "AIzaSyB0rmLwNQQfoy97iWnm8Pvkdh9nju23E2M"
+import os
+
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
 def analyze_plant_image(base64_image, mime_type="image/jpeg"):
     # Strip data URI prefix if frontend accidentally sends it
     if base64_image and ',' in base64_image[:100]:
         base64_image = base64_image.split(',', 1)[1]
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={GEMINI_API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
     headers = {"Content-Type": "application/json"}
     payload = {
         "contents": [{

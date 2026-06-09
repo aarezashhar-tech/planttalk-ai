@@ -6,6 +6,11 @@ import database
 import weather_client
 import ai_engine
 import os
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 PORT = int(os.environ.get('PORT', 8000))
 
