@@ -94,6 +94,25 @@ export default function IndiaForecast() {
       {/* Main Content Wrapper */}
       <div className="flex-1 flex flex-col md:ml-64 min-h-screen">
         {/* TopAppBar */}
+        {/* Mobile Header */}
+        <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0a1a10]/80 backdrop-blur-md border-b border-white/5 flex justify-between items-center px-4 z-40">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-secondary/20 flex items-center justify-center border border-secondary/50">
+              <span className="material-icons text-secondary text-sm" style={{fontVariationSettings: "'FILL' 1"}}>eco</span>
+            </div>
+            <span className="font-bold text-secondary text-base tracking-tight">PlantTalk AI</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <button className="text-gray-100 hover:text-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full">
+              <span className="material-icons text-xl">notifications</span>
+            </button>
+            <button className="text-gray-100 hover:text-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full">
+              <span className="material-icons text-xl">account_circle</span>
+            </button>
+          </div>
+        </header>
+
+        {/* Desktop TopAppBar */}
         <header className="hidden md:flex justify-between items-center px-8 bg-transparent fixed top-0 right-0 w-[calc(100%-16rem)] h-20 backdrop-blur-md border-b border-white/5 z-40">
           <div className="font-headline-lg text-headline-lg font-black text-secondary">PlantTalk AI</div>
           <div className="flex items-center gap-6">
@@ -111,13 +130,13 @@ export default function IndiaForecast() {
         </header>
 
         {/* Canvas */}
-        <main className="flex-1 p-5 md:p-8 pt-24 md:pt-28">
+        <main className="flex-1 p-4 md:p-8 pt-20 md:pt-28 pb-24 md:pb-8">
           {/* Banner */}
-          <div className="w-full rounded-xl overflow-hidden relative h-64 mb-10 border border-white/10 shadow-[0_0_30px_rgba(16,185,129,0.1)] animate-slide-up" style={{animationDelay: '0.1s', animationFillMode: 'both'}}>
+          <div className="w-full rounded-xl overflow-hidden relative h-40 md:h-64 mb-6 md:mb-10 border border-white/10 shadow-[0_0_30px_rgba(16,185,129,0.1)] animate-slide-up" style={{animationDelay: '0.1s', animationFillMode: 'both'}}>
             <div className="absolute inset-0 bg-gradient-to-r from-primary-container via-surface-container-high to-surface-container opacity-90 z-10"></div>
-            <div className="absolute inset-0 z-20 flex flex-col justify-center p-8 md:p-12">
-              <h2 className="font-display-lg text-4xl font-bold text-white mb-2 tracking-tight">🇮🇳 {t('India Intelligence')}</h2>
-              <p className="font-body-md text-body-md text-primary opacity-90 uppercase tracking-widest">{t('Multi-Model Regional Aggregate')}</p>
+            <div className="absolute inset-0 z-20 flex flex-col justify-center p-6 md:p-12">
+              <h2 className="font-display-lg text-2xl md:text-4xl font-bold text-white mb-1 md:mb-2 tracking-tight">🇮🇳 {t('India Intelligence')}</h2>
+              <p className="font-body-md text-body-md text-primary opacity-90 uppercase tracking-widest text-xs md:text-base">{t('Multi-Model Regional Aggregate')}</p>
             </div>
           </div>
 
@@ -125,14 +144,14 @@ export default function IndiaForecast() {
           <div className="grid grid-cols-1 gap-4 max-w-5xl mx-auto animate-slide-up" style={{animationDelay: '0.2s', animationFillMode: 'both'}}>
             {forecastData.regions.map((region, idx) => (
               <div key={idx} className="bg-white/5 backdrop-blur-xl border border-white/10 hover:bg-white/10 rounded-xl overflow-hidden cursor-pointer group transition-colors" onClick={() => toggleAccordion(region.name)}>
-                <div className="p-6 flex justify-between items-center border-b border-transparent group-hover:border-white/5 transition-colors">
+                <div className="p-4 md:p-6 flex justify-between items-center border-b border-transparent group-hover:border-white/5 transition-colors min-h-[64px]">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center border border-white/10 group-hover:border-secondary transition-colors">
                       <span className="material-icons text-secondary">explore</span>
                     </div>
                     <div>
-                      <h3 className="font-headline-lg-mobile text-xl font-bold text-white">{region.name}</h3>
-                      <p className="font-label-mono text-label-mono text-gray-100 mt-1">Avg Temp: {region.summary.avgTemp}°C</p>
+                      <h3 className="font-headline-lg-mobile text-base md:text-xl font-bold text-white">{region.name}</h3>
+                      <p className="font-label-mono text-label-mono text-gray-100 mt-0.5 md:mt-1 text-xs md:text-sm">Avg Temp: {region.summary.avgTemp}°C</p>
                     </div>
                   </div>
                   <span className={`material-icons text-gray-100 transform transition-transform duration-300 ${expandedRegion === region.name ? 'rotate-180' : ''}`}>expand_more</span>
@@ -142,8 +161,8 @@ export default function IndiaForecast() {
                   <div className="overflow-hidden bg-black/20">
                     <div className="p-6 border-t border-white/5 space-y-4">
                       {region.stations.map((station, sIdx) => (
-                        <div key={sIdx} className="bg-white/5 p-4 rounded-xl border border-white/10">
-                          <div className="flex justify-between font-semibold text-secondary">
+                        <div key={sIdx} className="bg-white/5 p-3 md:p-4 rounded-xl border border-white/10">
+                          <div className="flex justify-between font-semibold text-secondary text-sm md:text-base">
                             <span>{station.city}, {station.state}</span>
                             <span>{station.current.temp}°C</span>
                           </div>

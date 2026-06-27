@@ -193,7 +193,26 @@ export const PlantDoctor = ({ userProfile }) => {
 
       {/* Main Content */}
       <main className="md:ml-64 min-h-screen flex flex-col relative z-10">
-        <header className="fixed top-0 right-0 w-[calc(100%-16rem)] h-20 bg-transparent backdrop-blur-md border-b border-white/5 flex justify-between items-center px-8 z-40 hidden md:flex">
+        {/* Mobile Header */}
+        <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0a1a10]/80 backdrop-blur-md border-b border-white/5 flex justify-between items-center px-4 z-40">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-secondary/20 flex items-center justify-center border border-secondary/50">
+              <span className="material-icons text-secondary text-sm" style={{fontVariationSettings: "'FILL' 1"}}>eco</span>
+            </div>
+            <span className="font-bold text-secondary text-base tracking-tight">PlantTalk AI</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <button className="text-gray-100 hover:text-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full">
+              <span className="material-icons text-xl">notifications</span>
+            </button>
+            <button className="text-gray-100 hover:text-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full">
+              <span className="material-icons text-xl">account_circle</span>
+            </button>
+          </div>
+        </header>
+
+        {/* Desktop Header */}
+        <header className="fixed top-0 right-0 w-[calc(100%-16rem)] h-20 bg-transparent backdrop-blur-md border-b border-white/5 justify-between items-center px-8 z-40 hidden md:flex">
           <div className="text-primary dark:text-primary"></div>
           <div className="flex items-center gap-6">
             <button className="text-gray-100 hover:text-secondary transition-colors hover:translate-y-[-1px] transition-transform">
@@ -205,22 +224,22 @@ export const PlantDoctor = ({ userProfile }) => {
           </div>
         </header>
 
-        <div className="pt-32 px-5 md:px-8 pb-12 flex-grow flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto w-full">
+        <div className="pt-20 md:pt-32 px-4 md:px-8 pb-24 md:pb-12 flex-grow flex flex-col lg:flex-row gap-6 md:gap-8 max-w-7xl mx-auto w-full">
           {/* Main Center Zone */}
           <div className="flex-1 flex flex-col animate-slide-up" style={{animationDelay: '0.1s', animationFillMode: 'both'}}>
             <header className="mb-8">
-              <h2 className="font-display-lg text-4xl font-bold text-white mb-2 flex items-center gap-3">
-                <span className="material-icons text-secondary text-5xl font-bold" style={{fontVariationSettings: "'FILL' 1"}}>psychiatry</span>
+              <h2 className="font-display-lg text-2xl md:text-4xl font-bold text-white mb-2 flex items-center gap-2 md:gap-3">
+                <span className="material-icons text-secondary text-3xl md:text-5xl font-bold" style={{fontVariationSettings: "'FILL' 1"}}>psychiatry</span>
                 AI Plant Doctor
               </h2>
-              <p className="font-body-md text-body-md text-gray-100 max-w-2xl">
+              <p className="font-body-md text-body-md text-gray-100 max-w-2xl text-sm md:text-base">
                 Upload a photo of your plant for an instant diagnosis powered by Gemini Vision API.
               </p>
             </header>
 
             {/* Drag & Drop Container */}
             <div 
-              className="bg-white/5 backdrop-blur-xl border border-white/10 border-t-white/20 border-l-white/15 rounded-2xl flex-grow flex flex-col items-center justify-center p-8 relative overflow-hidden group min-h-[400px] cursor-pointer hover:bg-white/10 transition-colors"
+              className="bg-white/5 backdrop-blur-xl border border-white/10 border-t-white/20 border-l-white/15 rounded-2xl flex-grow flex flex-col items-center justify-center p-4 md:p-8 relative overflow-hidden group min-h-[280px] md:min-h-[400px] cursor-pointer hover:bg-white/10 transition-colors"
               onClick={() => fileInputRef.current?.click()}
               onDragOver={(e) => e.preventDefault()}
               onDrop={handleDrop}
@@ -240,7 +259,7 @@ export const PlantDoctor = ({ userProfile }) => {
               <div className="relative z-10 flex flex-col items-center text-center space-y-6 w-full h-full justify-center">
                 {selectedImage ? (
                   <div className="relative w-full h-full flex flex-col items-center justify-center">
-                    <img src={selectedImage} alt="Selected" className="max-h-[350px] object-contain rounded-lg shadow-sm" />
+                    <img src={selectedImage} alt="Selected" className="max-h-[250px] md:max-h-[350px] object-contain rounded-lg shadow-sm" />
                     <div className="mt-4 text-sm font-semibold text-secondary bg-secondary/10 px-4 py-2 rounded-full border border-secondary/20">Click or drop to change image</div>
                   </div>
                 ) : (
@@ -249,7 +268,7 @@ export const PlantDoctor = ({ userProfile }) => {
                       <span className="material-icons text-4xl font-bold text-secondary">add_a_photo</span>
                     </div>
                     <div>
-                      <h3 className="font-headline-lg text-2xl font-bold text-white mb-2">Drag and drop an image here</h3>
+                      <h3 className="font-headline-lg text-xl md:text-2xl font-bold text-white mb-2">Drag and drop an image here</h3>
                       <p className="font-body-md text-body-md text-gray-100">or <span className="text-secondary cursor-pointer hover:underline">click to browse</span> your files</p>
                     </div>
                     <p className="font-label-mono text-label-mono text-gray-100/90 uppercase">Supports JPG, PNG, WEBP (Max 10MB)</p>
@@ -270,7 +289,7 @@ export const PlantDoctor = ({ userProfile }) => {
               <button 
                 onClick={handleAnalyze}
                 disabled={!imageFile || isAnalyzing}
-                className="bg-secondary text-on-secondary px-8 py-4 rounded-xl font-headline-lg text-headline-lg-mobile md:text-xl font-bold flex items-center gap-3 transition-all disabled:opacity-90 disabled:cursor-not-allowed hover:shadow-[0_0_25px_rgba(16,185,129,0.7)] hover:-translate-y-[2px]"
+                className="bg-secondary text-on-secondary px-6 md:px-8 py-4 rounded-xl font-headline-lg text-base md:text-xl font-bold flex items-center gap-3 transition-all disabled:opacity-90 disabled:cursor-not-allowed hover:shadow-[0_0_25px_rgba(16,185,129,0.7)] hover:-translate-y-[2px] min-h-[52px] w-full sm:w-auto justify-center"
                 style={{boxShadow: '0 0 15px rgba(16, 185, 129, 0.4)'}}
               >
                 {isAnalyzing ? (

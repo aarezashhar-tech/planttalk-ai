@@ -207,8 +207,26 @@ export const Community = ({ userProfile }) => {
         
       </nav>
 
-      {/* TopAppBar */}
-      <header className="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] h-20 backdrop-blur-md border-b border-white/5 flex justify-between items-center px-5 md:px-8 z-40 hidden md:flex">
+      {/* Mobile Header */}
+      <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0a1a10]/80 backdrop-blur-md border-b border-white/5 flex justify-between items-center px-4 z-40">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-full bg-secondary/20 flex items-center justify-center border border-secondary/50">
+            <span className="material-icons text-secondary text-sm" style={{fontVariationSettings: "'FILL' 1"}}>eco</span>
+          </div>
+          <span className="font-bold text-secondary text-base tracking-tight">PlantTalk AI</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <button className="text-gray-100 hover:text-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full">
+            <span className="material-icons text-xl">notifications</span>
+          </button>
+          <button className="text-gray-100 hover:text-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full">
+            <span className="material-icons text-xl">account_circle</span>
+          </button>
+        </div>
+      </header>
+
+      {/* Desktop TopAppBar */}
+      <header className="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] h-20 backdrop-blur-md border-b border-white/5 justify-between items-center px-5 md:px-8 z-40 hidden md:flex">
         <div className="flex items-center gap-4">
           <h2 className="font-headline-lg-mobile md:font-headline-lg text-xl font-black text-secondary md:hidden">PlantTalk AI</h2>
         </div>
@@ -229,12 +247,12 @@ export const Community = ({ userProfile }) => {
       </header>
 
       {/* Main Content */}
-      <main className="pt-24 pb-20 md:pb-10 px-5 md:px-8 md:ml-64 min-h-screen">
+      <main className="pt-20 md:pt-24 pb-24 md:pb-10 px-4 md:px-8 md:ml-64 min-h-screen">
         <div className="mb-10 animate-slide-up" style={{animationDelay: '0.1s', animationFillMode: 'both'}}>
-          <h1 className="font-display-lg text-4xl font-bold text-white flex items-center gap-4">
+          <h1 className="font-display-lg text-2xl md:text-4xl font-bold text-white flex items-center gap-3 md:gap-4">
             👨‍🌾 {t('Farmer Community')}
           </h1>
-          <p className="font-body-md text-gray-100 mt-2 max-w-2xl">
+          <p className="font-body-md text-gray-100 mt-1 md:mt-2 max-w-2xl text-sm md:text-base">
             {t('Share tips, ask questions, help each other grow. Connect with thousands of precision agriculture experts globally.')}
           </p>
         </div>
@@ -244,9 +262,9 @@ export const Community = ({ userProfile }) => {
           <div className="lg:col-span-8 flex flex-col gap-6">
             
             {/* Composer */}
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 border-t-white/15 border-l-white/15 rounded-xl p-6 animate-slide-up" style={{animationDelay: '0.2s', animationFillMode: 'both'}}>
-              <div className="flex gap-4">
-                <div className="w-12 h-12 rounded-full border border-secondary flex items-center justify-center text-xl bg-white/10 flex-shrink-0">
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 border-t-white/15 border-l-white/15 rounded-xl p-4 md:p-6 animate-slide-up" style={{animationDelay: '0.2s', animationFillMode: 'both'}}>
+              <div className="flex gap-3 md:gap-4">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-secondary flex items-center justify-center text-lg md:text-xl bg-white/10 flex-shrink-0">
                   👨‍🌾
                 </div>
                 <div className="flex-grow flex flex-col gap-3">
@@ -273,7 +291,7 @@ export const Community = ({ userProfile }) => {
                     <button 
                       onClick={handleCreatePost}
                       disabled={!composeText.trim()}
-                      className="px-4 py-1.5 rounded-full bg-secondary text-on-secondary font-bold text-sm disabled:opacity-90 hover:bg-secondary-fixed transition-colors"
+                      className="px-4 py-2 rounded-full bg-secondary text-on-secondary font-bold text-sm disabled:opacity-90 hover:bg-secondary-fixed transition-colors min-h-[44px]"
                     >
                       Post
                     </button>
@@ -336,7 +354,7 @@ export const Community = ({ userProfile }) => {
                     <div className="flex items-center gap-4 text-gray-100 border-t border-white/5 pt-4 mt-2">
                       <button 
                         onClick={() => handleLike(post.id)}
-                        className={`flex items-center gap-1.5 transition-colors text-sm ${isLiked(post) ? 'text-secondary' : 'hover:text-secondary'}`}
+                        className={`flex items-center gap-1.5 transition-colors text-sm min-h-[44px] px-2 rounded-lg ${isLiked(post) ? 'text-secondary' : 'hover:text-secondary'}`}
                       >
                         <span className="material-icons" style={{fontVariationSettings: isLiked(post) ? "'FILL' 1" : "'FILL' 0"}}>thumb_up</span> {post.likes}
                       </button>
@@ -345,7 +363,7 @@ export const Community = ({ userProfile }) => {
                           setExpandedReplies({ ...expandedReplies, [post.id]: !showReplies });
                           if (!showReplies) setReplyingTo(post.id);
                         }}
-                        className="flex items-center gap-1.5 hover:text-secondary transition-colors text-sm"
+                        className="flex items-center gap-1.5 hover:text-secondary transition-colors text-sm min-h-[44px] px-2 rounded-lg"
                       >
                         <span className="material-icons" style={{fontVariationSettings: "'FILL' 0"}}>chat_bubble</span> {(post.replies || []).length}
                       </button>

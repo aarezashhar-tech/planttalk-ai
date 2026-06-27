@@ -216,33 +216,36 @@ export default function HomeDashboard() {
         {/* Main Content Canvas */}
         <main className="flex-1 ml-0 md:ml-64 h-full overflow-y-auto relative z-10">
           {/* TopAppBar */}
-          <header className="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] h-20 bg-transparent backdrop-blur-md border-b border-white/5 flex justify-between items-center px-8 z-40">
-            <div className="md:hidden">
-              <span className="font-headline-lg-mobile text-headline-lg-mobile font-black text-secondary">PlantTalk AI</span>
+          <header className="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] h-16 md:h-20 bg-[#0a1a10]/80 md:bg-transparent backdrop-blur-md border-b border-white/5 flex justify-between items-center px-4 md:px-8 z-40">
+            <div className="md:hidden flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-secondary/20 flex items-center justify-center border border-secondary/50">
+                <span className="material-icons text-secondary text-sm" style={{fontVariationSettings: "'FILL' 1"}}>eco</span>
+              </div>
+              <span className="font-bold text-secondary text-base tracking-tight">PlantTalk AI</span>
             </div>
             <div className="hidden md:block flex-1"></div>
-            <div className="flex items-center gap-4">
-              <button className="text-gray-100 hover:text-secondary hover:-translate-y-[1px] transition-all p-2 rounded-full hover:bg-white/5">
-                <span className="material-icons">notifications</span>
+            <div className="flex items-center gap-2 md:gap-4">
+              <button className="text-gray-100 hover:text-secondary transition-all min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full hover:bg-white/5">
+                <span className="material-icons text-xl">notifications</span>
               </button>
-              <button className="text-gray-100 hover:text-secondary hover:-translate-y-[1px] transition-all p-2 rounded-full hover:bg-white/5">
-                <span className="material-icons">account_circle</span>
+              <button className="text-gray-100 hover:text-secondary transition-all min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full hover:bg-white/5">
+                <span className="material-icons text-xl">account_circle</span>
               </button>
             </div>
           </header>
 
           {/* Dashboard Content Container */}
-          <div className="pt-28 pb-12 px-5 md:px-8 max-w-[1600px] mx-auto min-h-screen flex flex-col gap-8">
+          <div className="pt-20 md:pt-28 pb-24 md:pb-12 px-4 md:px-8 max-w-[1600px] mx-auto min-h-screen flex flex-col gap-5 md:gap-8">
             {/* Hero Section */}
             <section className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 animate-slide-up" style={{animationDelay: '0.1s', animationFillMode: 'both'}}>
               <div>
-                <h2 className="font-display-lg text-4xl font-bold text-white tracking-tight">Welcome back, {farmerName}! 🌾</h2>
-                <p className="font-body-md text-body-md text-gray-100 mt-2 max-w-2xl">Here is your active field intelligence for today.</p>
+                <h2 className="font-display-lg text-2xl md:text-4xl font-bold text-white tracking-tight">Welcome back, {farmerName}! 🌾</h2>
+                <p className="font-body-md text-body-md text-gray-100 mt-1 md:mt-2 max-w-2xl text-sm md:text-base">Here is your active field intelligence for today.</p>
               </div>
             </section>
 
             {/* Location Search & Chips */}
-            <section className="bg-white/5 backdrop-blur-xl border border-white/10 border-t-white/15 border-l-white/15 rounded-xl p-6 shadow-lg animate-slide-up" style={{animationDelay: '0.2s', animationFillMode: 'both'}}>
+            <section className="bg-white/5 backdrop-blur-xl border border-white/10 border-t-white/15 border-l-white/15 rounded-xl p-4 md:p-6 shadow-lg animate-slide-up" style={{animationDelay: '0.2s', animationFillMode: 'both'}}>
               <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
                 <div className="relative w-full max-w-md">
                    <LocationSearch 
@@ -259,16 +262,16 @@ export default function HomeDashboard() {
             </section>
 
             {/* 4 Column Bento Grid */}
-            <section className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 transition-opacity duration-300 ${isFetchingLocation ? 'opacity-90 pointer-events-none' : 'opacity-100'}`}>
+            <section className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 transition-opacity duration-300 ${isFetchingLocation ? 'opacity-90 pointer-events-none' : 'opacity-100'}`}>
               
               {/* Card 1: Live Weather */}
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 hover:border-secondary/30 hover:bg-white/10 hover:-translate-y-1 transition-all duration-300 rounded-xl p-6 flex flex-col justify-between min-h-[220px] shadow-lg animate-slide-up cursor-pointer group" style={{animationDelay: '0.3s', animationFillMode: 'both'}}>
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 hover:border-secondary/30 hover:bg-white/10 hover:-translate-y-1 transition-all duration-300 rounded-xl p-4 md:p-6 flex flex-col justify-between min-h-[180px] md:min-h-[220px] shadow-lg animate-slide-up cursor-pointer group" style={{animationDelay: '0.3s', animationFillMode: 'both'}}>
                 <div className="flex justify-between items-start">
                   <span className="font-label-mono text-label-mono text-gray-100 uppercase tracking-wider text-xs font-semibold">{t('Live Weather')}</span>
                   <span className="material-icons text-tertiary text-3xl font-bold group-hover:scale-110 transition-transform">light_mode</span>
                 </div>
                 <div>
-                  <div className="font-display-lg text-5xl font-bold text-white mt-2 mb-1 flex items-baseline gap-1">
+                  <div className="font-display-lg text-3xl md:text-5xl font-bold text-white mt-2 mb-1 flex items-baseline gap-1">
                     <span>{weather?.temperature || '--'}</span>°C
                   </div>
                   <p className="font-body-md text-body-md text-gray-100">{displayLocation}</p>
@@ -286,7 +289,7 @@ export default function HomeDashboard() {
               </div>
 
               {/* Card 2: Pest Risk */}
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 hover:border-secondary/30 hover:bg-white/10 hover:-translate-y-1 transition-all duration-300 rounded-xl p-6 flex flex-col justify-between min-h-[220px] shadow-lg animate-slide-up cursor-pointer group" style={{animationDelay: '0.4s', animationFillMode: 'both'}}>
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 hover:border-secondary/30 hover:bg-white/10 hover:-translate-y-1 transition-all duration-300 rounded-xl p-4 md:p-6 flex flex-col justify-between min-h-[180px] md:min-h-[220px] shadow-lg animate-slide-up cursor-pointer group" style={{animationDelay: '0.4s', animationFillMode: 'both'}}>
                 <div className="flex justify-between items-start">
                   <span className="font-label-mono text-label-mono text-gray-100 uppercase tracking-wider text-xs font-semibold">{t('Pest Risk')}</span>
                   <span className={`material-icons ${insights?.pestRisk?.includes('CRITICAL') ? 'text-error' : 'text-secondary'}`}>bug_report</span>
@@ -303,7 +306,7 @@ export default function HomeDashboard() {
               </div>
 
               {/* Card 3: Overall Health */}
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 hover:border-secondary/30 hover:bg-white/10 hover:-translate-y-1 transition-all duration-300 rounded-xl p-6 flex flex-col justify-between min-h-[220px] shadow-lg animate-slide-up cursor-pointer group" style={{animationDelay: '0.5s', animationFillMode: 'both'}}>
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 hover:border-secondary/30 hover:bg-white/10 hover:-translate-y-1 transition-all duration-300 rounded-xl p-4 md:p-6 flex flex-col justify-between min-h-[180px] md:min-h-[220px] shadow-lg animate-slide-up cursor-pointer group" style={{animationDelay: '0.5s', animationFillMode: 'both'}}>
                 <div className="flex justify-between items-start">
                   <span className="font-label-mono text-label-mono text-gray-100 uppercase tracking-wider text-xs font-semibold">{t('Overall Health')}</span>
                   <span className="material-icons text-secondary">eco</span>
@@ -327,7 +330,7 @@ export default function HomeDashboard() {
               </div>
 
               {/* Card 4: Soil Health */}
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 hover:border-secondary/30 hover:bg-white/10 hover:-translate-y-1 transition-all duration-300 rounded-xl p-6 flex flex-col justify-between min-h-[220px] shadow-lg animate-slide-up cursor-pointer group" style={{animationDelay: '0.6s', animationFillMode: 'both'}}>
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 hover:border-secondary/30 hover:bg-white/10 hover:-translate-y-1 transition-all duration-300 rounded-xl p-4 md:p-6 flex flex-col justify-between min-h-[180px] md:min-h-[220px] shadow-lg animate-slide-up cursor-pointer group" style={{animationDelay: '0.6s', animationFillMode: 'both'}}>
                 <div className="flex justify-between items-start mb-4">
                   <span className="font-label-mono text-label-mono text-gray-100 uppercase tracking-wider text-xs font-semibold">Soil Health</span>
                   <span className="material-icons text-primary group-hover:rotate-12 transition-transform">science</span>

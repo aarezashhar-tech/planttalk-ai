@@ -125,14 +125,32 @@ export const Settings = ({ userProfile, onProfileUpdate, onLocationSelected }) =
         
       </nav>
 
-      {/* TopAppBar */}
+      {/* Mobile Header */}
+      <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0a1a10]/80 backdrop-blur-md border-b border-white/5 flex justify-between items-center px-4 z-40">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-full bg-secondary/20 flex items-center justify-center border border-secondary/50">
+            <span className="material-icons text-secondary text-sm" style={{fontVariationSettings: "'FILL' 1"}}>eco</span>
+          </div>
+          <span className="font-bold text-secondary text-base tracking-tight">PlantTalk AI</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <button className="text-gray-100 hover:text-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full">
+            <span className="material-icons text-xl">notifications</span>
+          </button>
+          <button className="text-gray-100 hover:text-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full">
+            <span className="material-icons text-xl">account_circle</span>
+          </button>
+        </div>
+      </header>
+
+      {/* Desktop TopAppBar */}
       <TopNavbar />
 
       {/* Main Content */}
-      <main className="flex-1 md:ml-64 pt-24 pb-20 md:pb-12 px-5 md:px-8 min-h-screen relative z-10">
+      <main className="flex-1 md:ml-64 pt-20 md:pt-24 pb-24 md:pb-12 px-4 md:px-8 min-h-screen relative z-10">
         <div className="mb-8 animate-slide-up" style={{animationDelay: '0s', animationFillMode: 'both'}}>
-          <h1 className="font-display-lg md:text-[40px] text-4xl font-bold text-white tracking-tight mb-2">{t('Account Settings')}</h1>
-          <p className="text-gray-100 font-body-md">{t('Manage your profile, preferences, and system configurations.')}</p>
+          <h1 className="font-display-lg text-2xl md:text-[40px] font-bold text-white tracking-tight mb-1 md:mb-2">{t('Account Settings')}</h1>
+          <p className="text-gray-100 font-body-md text-sm md:text-base">{t('Manage your profile, preferences, and system configurations.')}</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl mx-auto">
@@ -140,14 +158,14 @@ export const Settings = ({ userProfile, onProfileUpdate, onLocationSelected }) =
           <div className="col-span-1 lg:col-span-4 space-y-6">
             
             {/* User Profile Glass Card */}
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 border-t-white/20 border-l-white/20 rounded-xl p-8 flex flex-col items-center text-center relative overflow-hidden animate-slide-up hover:bg-white/10 transition-colors" style={{animationDelay: '0.1s', animationFillMode: 'both'}}>
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 border-t-white/20 border-l-white/20 rounded-xl p-6 md:p-8 flex flex-col items-center text-center relative overflow-hidden animate-slide-up hover:bg-white/10 transition-colors" style={{animationDelay: '0.1s', animationFillMode: 'both'}}>
               <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
               
-              <div className="relative w-32 h-32 rounded-full mb-6 p-1 bg-gradient-to-br from-secondary/40 to-surface-container border border-white/10 shadow-[0_0_25px_rgba(16,185,129,0.15)] group cursor-pointer flex items-center justify-center overflow-hidden">
+              <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full mb-4 md:mb-6 p-1 bg-gradient-to-br from-secondary/40 to-surface-container border border-white/10 shadow-[0_0_25px_rgba(16,185,129,0.15)] group cursor-pointer flex items-center justify-center overflow-hidden">
                 {displayAvatarUrl ? (
                   <img src={displayAvatarUrl} alt={displayName} referrerPolicy="no-referrer" className="w-full h-full object-cover rounded-full" />
                 ) : (
-                  <span className="text-5xl font-bold">{initial}</span>
+                  <span className="text-3xl md:text-5xl font-bold">{initial}</span>
                 )}
                 <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
                   <span className="material-icons text-white">photo_camera</span>
@@ -166,7 +184,7 @@ export const Settings = ({ userProfile, onProfileUpdate, onLocationSelected }) =
               />
               <button 
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full py-2.5 px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 group"
+                className="w-full py-2.5 px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 group min-h-[44px]"
               >
                 <span className="material-icons text-sm group-hover:text-secondary transition-colors">edit</span>
                 Edit Avatar
@@ -205,7 +223,7 @@ export const Settings = ({ userProfile, onProfileUpdate, onLocationSelected }) =
 
             {/* Account Danger Zone */}
             <div className="bg-white/5 backdrop-blur-xl border border-error-container/30 rounded-xl p-6 animate-slide-up" style={{animationDelay: '0.3s', animationFillMode: 'both'}}>
-              <button onClick={handleLogout} className="w-full py-3 px-4 bg-error-container/10 hover:bg-error-container/20 border border-error-container/50 rounded-lg text-error hover:text-error-container transition-all duration-300 flex items-center justify-center gap-2">
+              <button onClick={handleLogout} className="w-full py-3 px-4 bg-error-container/10 hover:bg-error-container/20 border border-error-container/50 rounded-lg text-error hover:text-error-container transition-all duration-300 flex items-center justify-center gap-2 min-h-[48px]">
                 <span className="material-icons">logout</span>
                 <span className="font-medium text-sm">{t('Logout Securely')}</span>
               </button>
@@ -299,10 +317,10 @@ export const Settings = ({ userProfile, onProfileUpdate, onLocationSelected }) =
 
                 {/* Action Bar */}
                 <div className="pt-8 mt-4 flex justify-end gap-4 border-t border-white/10">
-                  <button type="button" className="px-6 py-2.5 rounded-lg border border-white/10 text-white hover:bg-white/5 transition-colors text-sm font-medium">
+                  <button type="button" className="px-6 py-2.5 rounded-lg border border-white/10 text-white hover:bg-white/5 transition-colors text-sm font-medium min-h-[44px]">
                     {t('Discard Changes')}
                   </button>
-                  <button type="submit" className="bg-secondary text-black px-8 py-2.5 rounded-lg font-semibold text-sm flex items-center gap-2 group hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] hover:-translate-y-px transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                  <button type="submit" className="bg-secondary text-black px-8 py-2.5 rounded-lg font-semibold text-sm flex items-center gap-2 group hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] hover:-translate-y-px transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] min-h-[44px]">
                     <span className="material-icons text-sm group-hover:rotate-12 transition-transform">save</span>
                     {t('Save Configuration')}
                   </button>
