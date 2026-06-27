@@ -2,6 +2,7 @@ import urllib.request
 import json
 import time
 from datetime import datetime
+import concurrent.futures
 
 # ═══════════════════════════════════════════════════════════════
 # 42 Representative IMD Stations across 7 Meteorological Regions
@@ -190,46 +191,43 @@ def _analyze_impact(station, current, daily_today):
 # Main Forecast Generator
 # ═══════════════════════════════════════════════════════════════
 
+def fetch_single_station(station):
+    lat = station["lat"]
+    lon = station["lon"]
+    url = (
+        f"https://api.open-meteo.com/v1/forecast"
+        f"?latitude={lat}&longitude={lon}"
+        f"&current=temperature_2m,relative_humidity_2m,apparent_temperature,"
+        f"weathercode,wind_speed_10m,uv_index,precipitation"
+        f"&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,"
+        f"precipitation_probability_max,wind_speed_10m_max,weathercode,uv_index_max"
+        f"&timezone=Asia/Kolkata"
+    )
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'PlantTalkAI/2.0'})
+        with urllib.request.urlopen(req, timeout=10) as response:
+            return json.loads(response.read().decode('utf-8'))
+    except Exception as e:
+        print(f"Station {station['city']} fetch failed: {e}")
+        return {}
+
 def generate_india_forecast():
-    """Fetch weather for all 42 stations and generate impact-based forecast."""
+    """Fetch weather for all 42 stations in parallel and generate impact-based forecast."""
 
     # Check cache
     now = time.time()
     if _cache["data"] and (now - _cache["timestamp"]) < CACHE_TTL:
         return _cache["data"]
 
-    BATCH_SIZE = 42  # Fetch all stations per request to avoid Open-Meteo throttling
     all_station_data = []
 
-    for batch_start in range(0, len(INDIA_STATIONS), BATCH_SIZE):
-        batch = INDIA_STATIONS[batch_start:batch_start + BATCH_SIZE]
-        lats = ",".join([str(s["lat"]) for s in batch])
-        lons = ",".join([str(s["lon"]) for s in batch])
+    # Run the 42 station calls in parallel using ThreadPoolExecutor
+    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+        # map preserves the order of results matching INDIA_STATIONS
+        results = list(executor.map(fetch_single_station, INDIA_STATIONS))
+        
+    all_station_data = results
 
-        url = (
-            f"https://api.open-meteo.com/v1/forecast"
-            f"?latitude={lats}&longitude={lons}"
-            f"&current=temperature_2m,relative_humidity_2m,apparent_temperature,"
-            f"weathercode,wind_speed_10m,uv_index,precipitation"
-            f"&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,"
-            f"precipitation_probability_max,wind_speed_10m_max,weathercode,uv_index_max"
-            f"&timezone=Asia/Kolkata"
-        )
-
-        try:
-            req = urllib.request.Request(url, headers={'User-Agent': 'PlantTalkAI/2.0'})
-            with urllib.request.urlopen(req, timeout=15) as response:
-                raw = json.loads(response.read().decode('utf-8'))
-
-            # Open-Meteo returns a list for multiple coordinates, single dict for one
-            if not isinstance(raw, list):
-                raw = [raw]
-
-            all_station_data.extend(raw)
-        except Exception as batch_err:
-            print(f"Batch {batch_start//BATCH_SIZE + 1} failed: {batch_err}")
-            # Fill with empty dicts so indices stay aligned
-            all_station_data.extend([{}] * len(batch))
 
     try:
 
