@@ -23,7 +23,7 @@ def analyze_plant_image(base64_image, mime_type="image/jpeg"):
             print("DEBUG [ai_vision]: Stripping data URI prefix from base64_image", flush=True)
             base64_image = base64_image.split(',', 1)[1]
 
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
         headers = {"Content-Type": "application/json"}
         payload = {
             "contents": [{
@@ -36,7 +36,7 @@ def analyze_plant_image(base64_image, mime_type="image/jpeg"):
         
         req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers=headers, method='POST')
         
-        print("DEBUG [ai_vision]: Sending POST request to Gemini API (gemini-1.5-flash)...", flush=True)
+        print("DEBUG [ai_vision]: Sending POST request to Gemini API (gemini-2.5-flash)...", flush=True)
         with urllib.request.urlopen(req) as response:
             response_body = response.read().decode('utf-8')
             print("DEBUG [ai_vision]: Received success response from Gemini API.", flush=True)
