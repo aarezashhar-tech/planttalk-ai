@@ -179,6 +179,52 @@ export default function HomeDashboard() {
     displayLocation = weather.locationName;
   }
 
+  // Dynamic recalculations for dashboard cards
+  const currentHumidity = weather?.humidity || 0;
+  const currentTemp = weather?.temperature || 0;
+  const currentRainChance = weather?.rainChance || 0;
+
+  // 1. Pest Risk
+  let pestRiskLevel = 'LOW';
+  let pestRiskColor = 'text-secondary';
+  let pestRiskBg = 'bg-secondary animate-[pulse-good_2s_infinite]';
+  let pestRiskShadow = 'rgba(16,185,129,0.5)';
+  
+  if (currentHumidity > 80) {
+    pestRiskLevel = 'HIGH';
+    pestRiskColor = 'text-error';
+    pestRiskBg = 'bg-error animate-[pulse-critical_2s_infinite]';
+    pestRiskShadow = 'rgba(255,82,82,0.5)';
+  } else if (currentHumidity >= 60) {
+    pestRiskLevel = 'MEDIUM';
+    pestRiskColor = 'text-tertiary';
+    pestRiskBg = 'bg-tertiary animate-[pulse-good_2s_infinite]'; 
+    pestRiskShadow = 'rgba(255,193,7,0.5)'; 
+  }
+  const pestRiskText = `${t('Humidity:')} ${currentHumidity}%, ${t('Temp:')} ${currentTemp}°C`;
+
+  // 2. Overall Health
+  let healthLevel = 'GOOD';
+  let healthColor = 'text-secondary';
+  let healthBg = 'bg-secondary animate-[pulse-good_2s_infinite]';
+  let healthShadow = 'rgba(16,185,129,0.5)';
+
+  if (currentTemp > 40 || currentRainChance > 80) {
+    healthLevel = currentTemp > 40 ? 'POOR' : 'FAIR';
+    healthColor = currentTemp > 40 ? 'text-error' : 'text-tertiary';
+    healthBg = currentTemp > 40 ? 'bg-error animate-[pulse-critical_2s_infinite]' : 'bg-tertiary animate-[pulse-good_2s_infinite]';
+    healthShadow = currentTemp > 40 ? 'rgba(255,82,82,0.5)' : 'rgba(255,193,7,0.5)';
+  }
+
+  // 3. Next Watering
+  let nextWatering = 'Today';
+  const isSoilMoistureHigh = (soilData?.moisture > 50) || (currentHumidity > 85 && currentTemp < 30);
+  if (currentRainChance > 50) {
+    nextWatering = 'Tomorrow';
+  } else if (isSoilMoistureHigh) {
+    nextWatering = 'In 2 days';
+  }
+
   return (
     <div className="text-white font-body-md text-body-md antialiased selection:bg-secondary selection:text-on-secondary min-h-screen bg-[#0F1C14]">
       {/* Animated Mesh Background */}
@@ -298,16 +344,16 @@ export default function HomeDashboard() {
               <div className="bg-white/5 backdrop-blur-xl border border-white/10 hover:border-secondary/30 hover:bg-white/10 hover:-translate-y-1 transition-all duration-300 rounded-xl p-4 md:p-6 flex flex-col justify-between min-h-[180px] md:min-h-[220px] shadow-lg animate-slide-up cursor-pointer group" style={{animationDelay: '0.4s', animationFillMode: 'both'}}>
                 <div className="flex justify-between items-start">
                   <span className="font-label-mono text-label-mono text-gray-100 uppercase tracking-wider text-xs font-semibold">{t('Pest Risk')}</span>
-                  <span className={`material-icons ${insights?.pestRisk?.includes('CRITICAL') ? 'text-error' : 'text-secondary'}`}>bug_report</span>
+                  <span className={`material-icons ${pestRiskColor}`}>bug_report</span>
                 </div>
                 <div className="flex items-center gap-3 mt-4">
-                  <div className={`w-4 h-4 rounded-full ${insights?.pestRisk?.includes('CRITICAL') || insights?.pestRisk?.includes('HIGH') ? 'bg-error animate-[pulse-critical_2s_infinite]' : 'bg-secondary animate-[pulse-good_2s_infinite]'}`} style={insights?.pestRisk?.includes('CRITICAL') || insights?.pestRisk?.includes('HIGH') ? {boxShadow: '0 0 10px rgba(255,82,82,0.5)'} : {boxShadow: '0 0 10px rgba(16,185,129,0.5)'}}></div>
-                  <span className={`font-headline-lg text-2xl font-bold tracking-tight ${insights?.pestRisk?.includes('CRITICAL') || insights?.pestRisk?.includes('HIGH') ? 'text-error' : 'text-secondary'}`}>
-                    {insights?.pestRisk ? t(insights.pestRisk.split(' ')[0]) : t('LOW')}
+                  <div className={`w-4 h-4 rounded-full ${pestRiskBg}`} style={{boxShadow: `0 0 10px ${pestRiskShadow}`}}></div>
+                  <span className={`font-headline-lg text-2xl font-bold tracking-tight ${pestRiskColor}`}>
+                    {t(pestRiskLevel)}
                   </span>
                 </div>
                 <p className="font-body-md text-body-md text-gray-100 mt-4 text-sm leading-relaxed">
-                  {insights?.action || insights?.recommendedAction ? t(insights.action || insights.recommendedAction) : t('No immediate action required.')}
+                  {pestRiskText}
                 </p>
               </div>
 
@@ -315,12 +361,12 @@ export default function HomeDashboard() {
               <div className="bg-white/5 backdrop-blur-xl border border-white/10 hover:border-secondary/30 hover:bg-white/10 hover:-translate-y-1 transition-all duration-300 rounded-xl p-4 md:p-6 flex flex-col justify-between min-h-[180px] md:min-h-[220px] shadow-lg animate-slide-up cursor-pointer group" style={{animationDelay: '0.5s', animationFillMode: 'both'}}>
                 <div className="flex justify-between items-start">
                   <span className="font-label-mono text-label-mono text-gray-100 uppercase tracking-wider text-xs font-semibold">{t('Overall Health')}</span>
-                  <span className="material-icons text-secondary">eco</span>
+                  <span className={`material-icons ${healthColor}`}>eco</span>
                 </div>
                 <div className="flex items-center gap-3 mt-4">
-                  <div className="w-4 h-4 rounded-full bg-secondary animate-[pulse-good_2s_infinite]" style={{boxShadow: '0 0 10px rgba(16,185,129,0.5)'}}></div>
-                  <span className="font-headline-lg text-2xl font-bold tracking-tight text-secondary">
-                    {insights?.health ? t(insights.health.split(' ')[0]) : t('GOOD')}
+                  <div className={`w-4 h-4 rounded-full ${healthBg}`} style={{boxShadow: `0 0 10px ${healthShadow}`}}></div>
+                  <span className={`font-headline-lg text-2xl font-bold tracking-tight ${healthColor}`}>
+                    {t(healthLevel)}
                   </span>
                 </div>
                 <div className="mt-4 space-y-2">
@@ -330,9 +376,10 @@ export default function HomeDashboard() {
                   </div>
                   <div className="flex justify-between items-center pt-1">
                     <span className="font-label-mono text-label-mono text-gray-100 text-xs">{t('Next Watering')}</span>
-                    <span className="font-label-mono text-label-mono text-white text-sm">Today <span className="text-primary">(5000L)</span></span>
+                    <span className="font-label-mono text-label-mono text-white text-sm">{t(nextWatering)}</span>
                   </div>
                 </div>
+                <p className="font-label-mono text-label-mono text-gray-400 text-[10px] mt-2">*{t('Weather-based Health')}</p>
               </div>
 
               {/* Card 4: Soil Health */}
