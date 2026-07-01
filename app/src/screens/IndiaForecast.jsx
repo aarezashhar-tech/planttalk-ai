@@ -1,11 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../contexts/LanguageContext';
 
+const FORECAST_LOADING_MESSAGES = [
+  'Fetching regional intelligence...',
+  'Analyzing satellite data...',
+  'Processing weather models...',
+  'Almost there...',
+];
+
 export default function IndiaForecast() {
   const { t } = useTranslation();
   const [forecastData, setForecastData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [expandedRegion, setExpandedRegion] = useState(null);
+  const [loadingMsgIdx, setLoadingMsgIdx] = useState(0);
+
+  useEffect(() => {
+    if (!loading) return;
+    const interval = setInterval(() => {
+      setLoadingMsgIdx(prev => (prev + 1) % FORECAST_LOADING_MESSAGES.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [loading]);
 
   const fetchForecast = () => {
     setLoading(true);
@@ -37,8 +53,7 @@ export default function IndiaForecast() {
     <div className="flex flex-col items-center justify-center h-screen bg-[#0F1C14] space-y-6">
       <div className="w-12 h-12 border-4 border-white/10 border-t-secondary rounded-full animate-spin"></div>
       <div className="text-secondary font-medium animate-pulse text-center">
-        <p>Waking up server & fetching IMD Ensemble Data...</p>
-        <p className="text-sm text-gray-100 mt-2">(Free tier backends may take 50s+ to respond)</p>
+        <p>{t(FORECAST_LOADING_MESSAGES[loadingMsgIdx])}</p>
       </div>
     </div>
   );
@@ -104,9 +119,6 @@ export default function IndiaForecast() {
           </div>
           <div className="flex items-center gap-1">
             <button className="text-gray-100 hover:text-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full">
-              <span className="material-icons text-xl">notifications</span>
-            </button>
-            <button className="text-gray-100 hover:text-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full">
               <span className="material-icons text-xl">account_circle</span>
             </button>
           </div>
@@ -120,9 +132,6 @@ export default function IndiaForecast() {
               <span className="material-icons text-gray-100 mr-2">search</span>
               <input className="bg-transparent border-none text-white font-body-md text-body-md focus:ring-0 placeholder-on-surface-variant w-48 outline-none" placeholder="Search regions..." type="text"/>
             </div>
-            <button className="text-gray-100 hover:text-secondary transition-colors hover:translate-y-[-1px] transition-transform">
-              <span className="material-icons" style={{fontVariationSettings: "'FILL' 0"}}>notifications</span>
-            </button>
             <button className="text-gray-100 hover:text-secondary transition-colors hover:translate-y-[-1px] transition-transform">
               <span className="material-icons" style={{fontVariationSettings: "'FILL' 0"}}>account_circle</span>
             </button>

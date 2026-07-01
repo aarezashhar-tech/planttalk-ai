@@ -45,8 +45,9 @@ export const Auth = ({ setSession, onLogin, setCurrentScreen }) => {
         data.picture = picture;
         data.auth_provider = 'gmail';
         localStorage.setItem('planttalk_session', JSON.stringify(data));
-        if (setSession) setSession(data);
-        window.location.href = '/';
+        // Force immediate redirect — don't rely on React state
+        window.location.replace('/');
+        return; // prevent further execution
       } else {
         console.error('Backend authentication failed:', data);
       }
@@ -90,12 +91,13 @@ export const Auth = ({ setSession, onLogin, setCurrentScreen }) => {
 
   const handleContinue = () => {
     if (sessionData) {
-      setSession(sessionData);
+      localStorage.setItem('planttalk_session', JSON.stringify(sessionData));
       const profile = localStorage.getItem('userProfile');
       if (profile) {
-        onLogin(JSON.parse(profile));
+        // Force full page reload to pick up session state reliably
+        window.location.replace('/');
       } else {
-        setCurrentScreen('onboarding');
+        window.location.replace('/onboarding');
       }
     }
   };
@@ -120,18 +122,24 @@ export const Auth = ({ setSession, onLogin, setCurrentScreen }) => {
         <div className="space-y-4 w-full pt-8">
           {view === 'returning' && (
             <div className="bg-surface-variant/30 p-6 rounded-2xl border border-outline-variant/30">
-              <p className="mb-4 text-gray-100 font-medium">You are already logged in as <br/><span className="text-primary font-bold">{sessionData?.contact}</span></p>
+              <p className="mb-4 text-gray-100 font-medium">{t('You are already logged in as')} <br/><span className="text-primary font-bold">{sessionData?.contact}</span></p>
               <button onClick={handleContinue} className="w-full btn-primary py-3 mb-3 rounded-xl">
-                Continue
+                {t('Continue')}
               </button>
               <button onClick={handleClearSession} className="w-full text-error text-sm font-medium py-2">
-                Login with different account
+                {t('Login with different account')}
               </button>
             </div>
           )}
 
           {view === 'options' && (
             <>
+              {loading && (
+                <div className="flex items-center justify-center gap-3 py-4">
+                  <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  <span className="text-gray-100 text-sm">{t('Signing you in...')}</span>
+                </div>
+              )}
               <div id="google-signIn-btn" className="w-full flex justify-center mt-2"></div>
             </>
           )}

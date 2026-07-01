@@ -6,11 +6,11 @@ import { TopNavbar } from '../components/TopNavbar';
 export const Settings = ({ userProfile, onProfileUpdate, onLocationSelected }) => {
   const { language, setLanguage, t } = useTranslation();
   const [lang, setLang] = useState(language);
-  const [farmerName, setFarmerName] = useState(userProfile?.farmerName || 'Farmer');
+  const [farmerName, setFarmerName] = useState(userProfile?.farmerName || '');
   const [crop, setCrop] = useState(userProfile?.crop || 'Wheat');
   const [pushEnabled, setPushEnabled] = useState(true);
   const [emailEnabled, setEmailEnabled] = useState(false);
-  const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
 
   const fileInputRef = useRef(null);
   const [avatarBase64, setAvatarBase64] = useState(userProfile?.avatar || null);
@@ -19,10 +19,10 @@ export const Settings = ({ userProfile, onProfileUpdate, onLocationSelected }) =
   const isGoogle = session.auth_provider === 'gmail';
   const isGuest = session.user_id === 'guest_123';
 
-  const displayName = isGoogle ? session.name : (isGuest ? 'Guest User' : farmerName);
-  const displaySubtitle = isGoogle ? session.contact : (isGuest ? 'Guest User' : 'Lead Agronomist');
+  const displayName = isGoogle ? session.name : (isGuest ? 'Guest User' : (farmerName || ''));
+  const displaySubtitle = isGoogle ? session.contact : (isGuest ? 'Guest User' : '');
   const displayAvatarUrl = avatarBase64 || (isGoogle ? session.picture : null);
-  const initial = displayName ? displayName.charAt(0).toUpperCase() : 'A';
+  const initial = displayName ? displayName.charAt(0).toUpperCase() : 'U';
 
   const displayLocation = userProfile?.location
     ? `${userProfile.location}${userProfile.state ? ', ' + userProfile.state : ''}`
@@ -49,6 +49,7 @@ export const Settings = ({ userProfile, onProfileUpdate, onLocationSelected }) =
   const handleSave = async (e) => {
     e?.preventDefault();
     setLanguage(lang);
+    setIsEditingProfile(false);
     const updatedProfile = { 
       ...userProfile, 
       language: lang,
@@ -102,30 +103,28 @@ export const Settings = ({ userProfile, onProfileUpdate, onLocationSelected }) =
         <div className="flex-1 space-y-2 flex flex-col">
           <a className="flex items-center gap-3 px-4 py-3 text-gray-100 hover:text-white hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg group" href="/">
             <span className="material-icons group-hover:text-secondary transition-colors">home</span>
-            <span className="font-label-mono text-sm">Home</span>
+            <span className="font-label-mono text-sm">{t('Home')}</span>
           </a>
           <a className="flex items-center gap-3 px-4 py-3 text-gray-100 hover:text-white hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg group" href="/doctor">
             <span className="material-icons group-hover:text-secondary transition-colors">medical_services</span>
-            <span className="font-label-mono text-sm">Doctor</span>
+            <span className="font-label-mono text-sm">{t('Doctor')}</span>
           </a>
           <a className="flex items-center gap-3 px-4 py-3 text-gray-100 hover:text-white hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg group" href="/india">
             <span className="material-icons group-hover:text-secondary transition-colors">location_on</span>
-            <span className="font-label-mono text-sm">India</span>
+            <span className="font-label-mono text-sm">{t('India')}</span>
           </a>
           <a className="flex items-center gap-3 px-4 py-3 text-gray-100 hover:text-white hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg group" href="/community">
             <span className="material-icons group-hover:text-secondary transition-colors">groups</span>
-            <span className="font-label-mono text-sm">Community</span>
+            <span className="font-label-mono text-sm">{t('Community')}</span>
           </a>
           <a className="flex items-center gap-3 px-4 py-3 text-secondary bg-white/10 rounded-lg border-l-2 border-secondary hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 scale-95" href="/settings">
             <span className="material-icons" style={{fontVariationSettings: "'FILL' 1"}}>settings</span>
-            <span className="font-label-mono text-sm font-bold">Settings</span>
+            <span className="font-label-mono text-sm font-bold">{t('Settings')}</span>
           </a>
         </div>
-        
-        
       </nav>
 
-      {/* Mobile Header */}
+      {/* Mobile Header — Bug 4: removed bell icon */}
       <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0a1a10]/80 backdrop-blur-md border-b border-white/5 flex justify-between items-center px-4 z-40">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-full bg-secondary/20 flex items-center justify-center border border-secondary/50">
@@ -134,9 +133,6 @@ export const Settings = ({ userProfile, onProfileUpdate, onLocationSelected }) =
           <span className="font-bold text-secondary text-base tracking-tight">PlantTalk AI</span>
         </div>
         <div className="flex items-center gap-1">
-          <button className="text-gray-100 hover:text-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full">
-            <span className="material-icons text-xl">notifications</span>
-          </button>
           <button className="text-gray-100 hover:text-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full">
             <span className="material-icons text-xl">account_circle</span>
           </button>
@@ -172,7 +168,7 @@ export const Settings = ({ userProfile, onProfileUpdate, onLocationSelected }) =
                 </div>
               </div>
               
-              <h2 className="font-headline-lg md:text-2xl text-xl font-bold text-white mb-1 truncate w-full text-center px-4">{displayName}</h2>
+              <h2 className="font-headline-lg md:text-2xl text-xl font-bold text-white mb-1 truncate w-full text-center px-4">{displayName || t('Enter your name')}</h2>
               <p className="font-label-mono text-secondary mb-6 tracking-widest uppercase text-xs truncate w-full px-4">{displaySubtitle}</p>
               
               <input 
@@ -182,13 +178,22 @@ export const Settings = ({ userProfile, onProfileUpdate, onLocationSelected }) =
                 className="hidden" 
                 onChange={handleImageUpload} 
               />
-              <button 
-                onClick={() => fileInputRef.current?.click()}
-                className="w-full py-2.5 px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 group min-h-[44px]"
-              >
-                <span className="material-icons text-sm group-hover:text-secondary transition-colors">edit</span>
-                Edit Avatar
-              </button>
+              <div className="flex gap-2 w-full">
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex-1 py-2.5 px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 group min-h-[44px]"
+                >
+                  <span className="material-icons text-sm group-hover:text-secondary transition-colors">edit</span>
+                  {t('Edit Avatar')}
+                </button>
+                <button 
+                  onClick={() => setIsEditingProfile(!isEditingProfile)}
+                  className={`flex-1 py-2.5 px-4 border rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 group min-h-[44px] ${isEditingProfile ? 'bg-secondary/20 border-secondary/50 text-secondary' : 'bg-white/5 hover:bg-white/10 border-white/10'}`}
+                >
+                  <span className="material-icons text-sm group-hover:text-secondary transition-colors">edit_note</span>
+                  {t('Edit Profile')}
+                </button>
+              </div>
             </div>
 
             {/* Preferences Card */}
@@ -246,16 +251,18 @@ export const Settings = ({ userProfile, onProfileUpdate, onLocationSelected }) =
               
               <form onSubmit={handleSave} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Name Field */}
+                  {/* Name Field — Bug 5: no more 'Farmer' default */}
                   <div className="space-y-2">
                     <label className="font-label-mono text-xs text-gray-100 uppercase tracking-wider block">{t('Full Name')}</label>
                     <div className="relative group">
                       <span className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-100 group-focus-within:text-secondary transition-colors material-icons text-lg pl-3">person</span>
                       <input 
-                        className="w-full pl-10 pr-4 py-3 rounded-t-lg bg-black/20 text-white focus:bg-black/30 transition-all text-sm border-b border-white/20 focus:border-secondary outline-none focus:shadow-[0_1px_0_0_#10B981]" 
+                        className={`w-full pl-10 pr-4 py-3 rounded-t-lg bg-black/20 text-white focus:bg-black/30 transition-all text-sm border-b border-white/20 focus:border-secondary outline-none focus:shadow-[0_1px_0_0_#10B981] ${!isEditingProfile ? 'opacity-60 cursor-not-allowed' : ''}`}
                         type="text" 
                         value={farmerName}
                         onChange={e => setFarmerName(e.target.value)}
+                        placeholder={t('Enter your name')}
+                        disabled={!isEditingProfile}
                       />
                     </div>
                   </div>
@@ -279,9 +286,10 @@ export const Settings = ({ userProfile, onProfileUpdate, onLocationSelected }) =
                     <div className="relative group">
                       <span className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-100 group-focus-within:text-secondary transition-colors material-icons text-lg pl-3">grass</span>
                       <select 
-                        className="w-full pl-10 pr-8 py-3 rounded-t-lg bg-black/20 text-white focus:bg-black/30 transition-all text-sm appearance-none cursor-pointer border-b border-white/20 focus:border-secondary outline-none focus:shadow-[0_1px_0_0_#10B981]"
+                        className={`w-full pl-10 pr-8 py-3 rounded-t-lg bg-black/20 text-white focus:bg-black/30 transition-all text-sm appearance-none cursor-pointer border-b border-white/20 focus:border-secondary outline-none focus:shadow-[0_1px_0_0_#10B981] ${!isEditingProfile ? 'opacity-60 pointer-events-none' : ''}`}
                         value={crop}
                         onChange={e => setCrop(e.target.value)}
+                        disabled={!isEditingProfile}
                       >
                         <option value="Wheat">{t('Wheat')}</option>
                         <option value="Rice">{t('Rice')}</option>

@@ -11,6 +11,13 @@ export default function HomeDashboard() {
 
   const [soilData, setSoilData] = useState(null);
   const [soilLoading, setSoilLoading] = useState(false);
+  const [activeLocation, setActiveLocation] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('selectedLocation'));
+    } catch (e) {
+      return null;
+    }
+  });
 
   useEffect(() => {
     const session = JSON.parse(localStorage.getItem('planttalk_session') || '{}');
@@ -57,12 +64,14 @@ export default function HomeDashboard() {
                   resData.insights = locRes.insights;
                   
                   // Save this so we don't have to geocode again
-                  localStorage.setItem('selectedLocation', JSON.stringify({
+                  const newLoc = {
                     latitude: geo.latitude,
                     longitude: geo.longitude,
                     locationName: profileLocation,
                     state: geo.admin1 || ''
-                  }));
+                  };
+                  localStorage.setItem('selectedLocation', JSON.stringify(newLoc));
+                  setActiveLocation(newLoc);
                 }
               }
             } catch (e) {
@@ -80,9 +89,8 @@ export default function HomeDashboard() {
       });
   }, [fetchWeatherForLocation]);
 
-  const storedLocation = JSON.parse(localStorage.getItem('selectedLocation'));
-  const lat = storedLocation?.latitude || data.profile?.latitude || 28.6139;
-  const lon = storedLocation?.longitude || data.profile?.longitude || 77.2090;
+  const lat = activeLocation?.latitude || data.profile?.latitude || 28.6139;
+  const lon = activeLocation?.longitude || data.profile?.longitude || 77.2090;
 
   useEffect(() => {
     if (lat && lon) {
@@ -105,10 +113,11 @@ export default function HomeDashboard() {
   const handleLocationSelected = async (locationData) => {
     try {
       localStorage.setItem('selectedLocation', JSON.stringify(locationData));
+      setActiveLocation(locationData);
       const result = await fetchWeatherForLocation(
         locationData.latitude,
         locationData.longitude,
-        `${locationData.locationName}, ${locationData.state}`
+        `${locationData.locationName}${locationData.state ? `, ${locationData.state}` : ''}`
       );
       if (result) {
         setData(prev => ({
@@ -160,8 +169,8 @@ export default function HomeDashboard() {
   const cropName = userProfileData.crop || 'Not set';
   
   let displayLocation = 'Unknown Location';
-  if (storedLocation && storedLocation.locationName) {
-    displayLocation = `${storedLocation.locationName}${storedLocation.state ? `, ${storedLocation.state}` : ''}`;
+  if (activeLocation && activeLocation.locationName) {
+    displayLocation = `${activeLocation.locationName}${activeLocation.state ? `, ${activeLocation.state}` : ''}`;
   } else if (userProfileData.location && userProfileData.location !== 'Unknown Location') {
     displayLocation = userProfileData.location;
   } else if (profile?.location && profile.location !== 'Unknown Location') {
@@ -226,9 +235,6 @@ export default function HomeDashboard() {
             <div className="hidden md:block flex-1"></div>
             <div className="flex items-center gap-2 md:gap-4">
               <button className="text-gray-100 hover:text-secondary transition-all min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full hover:bg-white/5">
-                <span className="material-icons text-xl">notifications</span>
-              </button>
-              <button className="text-gray-100 hover:text-secondary transition-all min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full hover:bg-white/5">
                 <span className="material-icons text-xl">account_circle</span>
               </button>
             </div>
@@ -239,8 +245,8 @@ export default function HomeDashboard() {
             {/* Hero Section */}
             <section className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 animate-slide-up" style={{animationDelay: '0.1s', animationFillMode: 'both'}}>
               <div>
-                <h2 className="font-display-lg text-2xl md:text-4xl font-bold text-white tracking-tight">Welcome back, {farmerName}! 🌾</h2>
-                <p className="font-body-md text-body-md text-gray-100 mt-1 md:mt-2 max-w-2xl text-sm md:text-base">Here is your active field intelligence for today.</p>
+                <h2 className="font-display-lg text-2xl md:text-4xl font-bold text-white tracking-tight">{t('Welcome back')}, {farmerName}! 🌾</h2>
+                <p className="font-body-md text-body-md text-gray-100 mt-1 md:mt-2 max-w-2xl text-sm md:text-base">{t('Here is your active field intelligence for today.')}</p>
               </div>
             </section>
 
@@ -255,7 +261,7 @@ export default function HomeDashboard() {
                 </div>
                 {isFetchingLocation && (
                   <div className="px-4 py-2 rounded-full bg-secondary/20 border border-secondary/50 text-secondary text-sm animate-pulse">
-                    🔄 Syncing atmospheric data...
+                  🔄 {t('Syncing atmospheric data...')}
                   </div>
                 )}
               </div>
@@ -319,11 +325,11 @@ export default function HomeDashboard() {
                 </div>
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span className="font-label-mono text-label-mono text-gray-100 text-xs">Crop</span>
+                    <span className="font-label-mono text-label-mono text-gray-100 text-xs">{t('Crop')}</span>
                     <span className="font-label-mono text-label-mono text-white font-semibold text-sm">{cropName}</span>
                   </div>
                   <div className="flex justify-between items-center pt-1">
-                    <span className="font-label-mono text-label-mono text-gray-100 text-xs">Next Watering</span>
+                    <span className="font-label-mono text-label-mono text-gray-100 text-xs">{t('Next Watering')}</span>
                     <span className="font-label-mono text-label-mono text-white text-sm">Today <span className="text-primary">(5000L)</span></span>
                   </div>
                 </div>
@@ -332,7 +338,7 @@ export default function HomeDashboard() {
               {/* Card 4: Soil Health */}
               <div className="bg-white/5 backdrop-blur-xl border border-white/10 hover:border-secondary/30 hover:bg-white/10 hover:-translate-y-1 transition-all duration-300 rounded-xl p-4 md:p-6 flex flex-col justify-between min-h-[180px] md:min-h-[220px] shadow-lg animate-slide-up cursor-pointer group" style={{animationDelay: '0.6s', animationFillMode: 'both'}}>
                 <div className="flex justify-between items-start mb-4">
-                  <span className="font-label-mono text-label-mono text-gray-100 uppercase tracking-wider text-xs font-semibold">Soil Health</span>
+                  <span className="font-label-mono text-label-mono text-gray-100 uppercase tracking-wider text-xs font-semibold">{t('Soil Health')}</span>
                   <span className="material-icons text-primary group-hover:rotate-12 transition-transform">science</span>
                 </div>
                 

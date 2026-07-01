@@ -1,13 +1,28 @@
 import React, { useState } from 'react';
 import { useTranslation } from '../contexts/LanguageContext';
 
+const ALL_STATES_UTS = [
+  // 28 States
+  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+  'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand',
+  'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur',
+  'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab',
+  'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura',
+  'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+  // 8 Union Territories
+  'Andaman and Nicobar Islands', 'Chandigarh', 'Dadra and Nagar Haveli and Daman and Diu',
+  'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry'
+];
+
 export const Onboarding = ({ onComplete }) => {
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
+  const [stateQuery, setStateQuery] = useState('');
+  const [showStateDropdown, setShowStateDropdown] = useState(false);
   const [profile, setProfile] = useState({
     farmerName: '',
     location: '',
-    state: 'Tamil Nadu',
+    state: '',
     farmSize: '',
     crop: 'Rice',
     growthStage: 'Vegetative',
@@ -47,9 +62,19 @@ export const Onboarding = ({ onComplete }) => {
     }
   };
 
-  const states = ['Tamil Nadu', 'Andhra Pradesh', 'Karnataka', 'Kerala', 'Maharashtra', 'Punjab', 'Uttar Pradesh', 'Rajasthan'];
   const crops = ['Rice', 'Wheat', 'Maize', 'Cotton', 'Tomato', 'Onion', 'Potato', 'Sugarcane', 'Groundnut', 'Soybean', 'Chilli', 'Brinjal', 'Cabbage', 'Cauliflower', 'Mango', 'Banana', 'Grapes', 'Pomegranate', 'Coconut'];
   const stages = ['Sowing', 'Germination', 'Vegetative', 'Flowering', 'Fruiting', 'Harvest'];
+
+  // Filter states based on user typing
+  const filteredStates = stateQuery.trim()
+    ? ALL_STATES_UTS.filter(s => s.toLowerCase().includes(stateQuery.toLowerCase()))
+    : ALL_STATES_UTS;
+
+  const handleStateSelect = (state) => {
+    setProfile({ ...profile, state });
+    setStateQuery(state);
+    setShowStateDropdown(false);
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 pb-24 text-on-background font-body">
@@ -95,15 +120,35 @@ export const Onboarding = ({ onComplete }) => {
               />
             </div>
 
-            <div>
+            <div className="relative">
               <label className="block text-label-md text-gray-100 mb-1">{t('State')}</label>
-              <select 
+              <input 
+                type="text"
                 className="w-full bg-surface-variant/50 border border-outline-variant rounded-xl p-3 focus:outline-none focus:border-primary appearance-none"
-                value={profile.state}
-                onChange={e => setProfile({...profile, state: e.target.value})}
-              >
-                {states.map(s => <option key={s} value={s}>{t(s)}</option>)}
-              </select>
+                value={stateQuery || profile.state}
+                onChange={e => {
+                  setStateQuery(e.target.value);
+                  setProfile({...profile, state: e.target.value});
+                  setShowStateDropdown(true);
+                }}
+                onFocus={() => setShowStateDropdown(true)}
+                placeholder={t('Type to search state/UT...')}
+                autoComplete="off"
+              />
+              {showStateDropdown && filteredStates.length > 0 && (
+                <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-surface border border-outline-variant/40 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                  {filteredStates.map(s => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => handleStateSelect(s)}
+                      className="w-full text-left px-4 py-2.5 text-sm hover:bg-primary/20 transition-colors border-b border-outline-variant/10 last:border-b-0"
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div>

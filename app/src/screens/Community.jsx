@@ -217,9 +217,6 @@ export const Community = ({ userProfile }) => {
         </div>
         <div className="flex items-center gap-1">
           <button className="text-gray-100 hover:text-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full">
-            <span className="material-icons text-xl">notifications</span>
-          </button>
-          <button className="text-gray-100 hover:text-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full">
             <span className="material-icons text-xl">account_circle</span>
           </button>
         </div>
@@ -236,9 +233,6 @@ export const Community = ({ userProfile }) => {
             <span className="material-icons absolute left-3 top-2.5 text-gray-100 text-sm">search</span>
           </div>
           <div className="flex items-center gap-4 text-gray-100">
-            <button className="hover:text-secondary hover:translate-y-[-1px] transition-transform">
-              <span className="material-icons">notifications</span>
-            </button>
             <button className="hover:text-secondary hover:translate-y-[-1px] transition-transform">
               <span className="material-icons">account_circle</span>
             </button>

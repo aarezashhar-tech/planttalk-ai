@@ -8,12 +8,12 @@ export const TopNavbar = () => {
   const isGuest = session.user_id === 'guest_123';
 
   const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-  const farmerName = userProfile?.farmerName || 'Farmer';
+  const farmerName = userProfile?.farmerName || '';
 
-  const displayName = isGoogle ? session.name : (isGuest ? 'Guest User' : farmerName);
-  const displaySubtitle = isGoogle ? session.contact : (isGuest ? 'Guest User' : 'Lead Agronomist');
+  const displayName = isGoogle ? session.name : (isGuest ? 'Guest User' : farmerName || 'User');
+  const displaySubtitle = isGoogle ? session.contact : (isGuest ? 'Guest User' : '');
   const displayAvatarUrl = isGoogle ? session.picture : null;
-  const initial = displayName ? displayName.charAt(0).toUpperCase() : 'A';
+  const initial = displayName ? displayName.charAt(0).toUpperCase() : 'U';
 
   const handleLogout = () => {
     localStorage.removeItem('userProfile');
@@ -35,10 +35,7 @@ export const TopNavbar = () => {
           <input className="bg-black/20 border-b border-white/20 focus:border-secondary outline-none pl-10 pr-4 py-2 rounded-full w-64 text-sm focus:w-72 transition-all duration-300 placeholder:text-gray-100/90 focus:shadow-[0_1px_0_0_#10B981] focus:bg-black/30 text-white" placeholder="Search..." type="text"/>
         </div>
         <div className="flex items-center gap-4 border-l border-white/10 pl-6">
-          <button onClick={() => alert('No new notifications')} className="text-gray-100 hover:text-secondary transition-colors hover:-translate-y-px transition-transform relative">
-            <span className="material-icons">notifications</span>
-            <span className="absolute top-0 right-0 w-2 h-2 bg-secondary rounded-full shadow-[0_0_5px_#10B981]"></span>
-          </button>
+          {/* Bug 4: Removed notification bell icon — no functionality */}
           <div className="relative">
             <button onClick={() => setShowAccountMenu(!showAccountMenu)} className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center hover:border-secondary transition-all overflow-hidden relative group">
               {displayAvatarUrl ? (

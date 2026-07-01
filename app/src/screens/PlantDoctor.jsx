@@ -18,6 +18,7 @@ export const PlantDoctor = ({ userProfile }) => {
   const [analysisText, setAnalysisText] = useState(null);
   const [history, setHistory] = useState([]);
   const [error, setError] = useState(null);
+  const [selectedDiagnosis, setSelectedDiagnosis] = useState(null);
 
   const fileInputRef = useRef(null);
 
@@ -90,9 +91,12 @@ export const PlantDoctor = ({ userProfile }) => {
         const firstLine = data.analysis.split('\n')[0].replace(/[#*]/g, '').trim();
         const title = firstLine.length > 60 ? firstLine.substring(0, 60) + '...' : firstLine;
 
+        // Bug 7: Save full analysis text and image in history
         const entry = {
           id: Date.now(),
           title: title,
+          fullAnalysis: data.analysis,
+          imageUrl: selectedImage,
           timestamp: Date.now(),
         };
         const updated = [entry, ...history].slice(0, 10);
@@ -160,40 +164,39 @@ export const PlantDoctor = ({ userProfile }) => {
           <li>
             <a className="flex items-center gap-3 px-4 py-3 text-gray-100 hover:text-white hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="/">
               <span className="material-icons">home</span>
-              <span className="font-label-mono text-label-mono">Home</span>
+              <span className="font-label-mono text-label-mono">{t('Home')}</span>
             </a>
           </li>
           <li>
             <a className="flex items-center gap-3 px-4 py-3 text-secondary bg-white/10 rounded-lg border-l-2 border-secondary scale-95 transition-transform duration-200" style={{boxShadow: '0 0 10px #10B981'}} href="/doctor">
               <span className="material-icons">medical_services</span>
-              <span className="font-label-mono text-label-mono">Doctor</span>
+              <span className="font-label-mono text-label-mono">{t('Doctor')}</span>
             </a>
           </li>
           <li>
             <a className="flex items-center gap-3 px-4 py-3 text-gray-100 hover:text-white hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="/india">
               <span className="material-icons">location_on</span>
-              <span className="font-label-mono text-label-mono">India</span>
+              <span className="font-label-mono text-label-mono">{t('India')}</span>
             </a>
           </li>
           <li>
             <a className="flex items-center gap-3 px-4 py-3 text-gray-100 hover:text-white hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="/community">
               <span className="material-icons">groups</span>
-              <span className="font-label-mono text-label-mono">Community</span>
+              <span className="font-label-mono text-label-mono">{t('Community')}</span>
             </a>
           </li>
           <li>
             <a className="flex items-center gap-3 px-4 py-3 text-gray-100 hover:text-white hover:bg-white/5 hover:backdrop-blur-md transition-all duration-300 rounded-lg" href="/settings">
               <span className="material-icons">settings</span>
-              <span className="font-label-mono text-label-mono">Settings</span>
+              <span className="font-label-mono text-label-mono">{t('Settings')}</span>
             </a>
           </li>
         </ul>
-        
       </nav>
 
       {/* Main Content */}
       <main className="md:ml-64 min-h-screen flex flex-col relative z-10">
-        {/* Mobile Header */}
+        {/* Mobile Header — Bug 4: removed bell icon */}
         <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0a1a10]/80 backdrop-blur-md border-b border-white/5 flex justify-between items-center px-4 z-40">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-secondary/20 flex items-center justify-center border border-secondary/50">
@@ -203,21 +206,15 @@ export const PlantDoctor = ({ userProfile }) => {
           </div>
           <div className="flex items-center gap-1">
             <button className="text-gray-100 hover:text-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full">
-              <span className="material-icons text-xl">notifications</span>
-            </button>
-            <button className="text-gray-100 hover:text-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full">
               <span className="material-icons text-xl">account_circle</span>
             </button>
           </div>
         </header>
 
-        {/* Desktop Header */}
+        {/* Desktop Header — Bug 4: removed bell icon */}
         <header className="fixed top-0 right-0 w-[calc(100%-16rem)] h-20 bg-transparent backdrop-blur-md border-b border-white/5 justify-between items-center px-8 z-40 hidden md:flex">
           <div className="text-primary dark:text-primary"></div>
           <div className="flex items-center gap-6">
-            <button className="text-gray-100 hover:text-secondary transition-colors hover:translate-y-[-1px] transition-transform">
-              <span className="material-icons">notifications</span>
-            </button>
             <button className="text-gray-100 hover:text-secondary transition-colors hover:translate-y-[-1px] transition-transform">
               <span className="material-icons">account_circle</span>
             </button>
@@ -230,10 +227,10 @@ export const PlantDoctor = ({ userProfile }) => {
             <header className="mb-8">
               <h2 className="font-display-lg text-2xl md:text-4xl font-bold text-white mb-2 flex items-center gap-2 md:gap-3">
                 <span className="material-icons text-secondary text-3xl md:text-5xl font-bold" style={{fontVariationSettings: "'FILL' 1"}}>psychiatry</span>
-                AI Plant Doctor
+                {t('AI Plant Doctor')}
               </h2>
               <p className="font-body-md text-body-md text-gray-100 max-w-2xl text-sm md:text-base">
-                Upload a photo of your plant for an instant diagnosis powered by Gemini Vision API.
+                {t('Upload a photo of your plant for an instant diagnosis powered by Gemini Vision API.')}
               </p>
             </header>
 
@@ -260,7 +257,7 @@ export const PlantDoctor = ({ userProfile }) => {
                 {selectedImage ? (
                   <div className="relative w-full h-full flex flex-col items-center justify-center">
                     <img src={selectedImage} alt="Selected" className="max-h-[250px] md:max-h-[350px] object-contain rounded-lg shadow-sm" />
-                    <div className="mt-4 text-sm font-semibold text-secondary bg-secondary/10 px-4 py-2 rounded-full border border-secondary/20">Click or drop to change image</div>
+                    <div className="mt-4 text-sm font-semibold text-secondary bg-secondary/10 px-4 py-2 rounded-full border border-secondary/20">{t('Click or drop to change image')}</div>
                   </div>
                 ) : (
                   <>
@@ -268,10 +265,10 @@ export const PlantDoctor = ({ userProfile }) => {
                       <span className="material-icons text-4xl font-bold text-secondary">add_a_photo</span>
                     </div>
                     <div>
-                      <h3 className="font-headline-lg text-xl md:text-2xl font-bold text-white mb-2">Drag and drop an image here</h3>
-                      <p className="font-body-md text-body-md text-gray-100">or <span className="text-secondary cursor-pointer hover:underline">click to browse</span> your files</p>
+                      <h3 className="font-headline-lg text-xl md:text-2xl font-bold text-white mb-2">{t('Drag and drop an image here')}</h3>
+                      <p className="font-body-md text-body-md text-gray-100">{t('or')} <span className="text-secondary cursor-pointer hover:underline">{t('click to browse')}</span> {t('your files')}</p>
                     </div>
-                    <p className="font-label-mono text-label-mono text-gray-100/90 uppercase">Supports JPG, PNG, WEBP (Max 10MB)</p>
+                    <p className="font-label-mono text-label-mono text-gray-100/90 uppercase">{t('Supports JPG, PNG, WEBP (Max 10MB)')}</p>
                   </>
                 )}
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageSelect} className="hidden" />
@@ -300,7 +297,7 @@ export const PlantDoctor = ({ userProfile }) => {
                 ) : (
                   <>
                     <span className="material-icons">auto_awesome</span>
-                    Analyze Plant Image
+                    {t('Analyze Plant Image')}
                   </>
                 )}
               </button>
@@ -326,31 +323,74 @@ export const PlantDoctor = ({ userProfile }) => {
           {/* Right Sidebar Panel - Recent Diagnoses */}
           <aside className="w-full lg:w-80 flex flex-col gap-6 animate-slide-up" style={{animationDelay: '0.2s', animationFillMode: 'both'}}>
             <div className="bg-white/5 backdrop-blur-xl border border-white/10 border-t-white/20 border-l-white/15 rounded-xl p-6 h-full flex flex-col">
-              <h3 className="font-label-mono text-label-mono text-gray-100 uppercase tracking-widest border-b border-white/10 pb-4 mb-6">Recent Diagnoses</h3>
+              <h3 className="font-label-mono text-label-mono text-gray-100 uppercase tracking-widest border-b border-white/10 pb-4 mb-6">{t('Recent Diagnoses')}</h3>
               
               {history.length > 0 ? (
                 <div className="space-y-4">
                   {history.map((h) => (
-                    <div key={h.id} className="flex gap-3 border-b border-white/5 pb-3 last:border-0 last:pb-0">
+                    <div 
+                      key={h.id} 
+                      className="flex gap-3 border-b border-white/5 pb-3 last:border-0 last:pb-0 cursor-pointer hover:bg-white/5 rounded-lg p-2 -m-2 transition-colors"
+                      onClick={() => setSelectedDiagnosis(h)}
+                    >
                       <div className="w-8 h-8 rounded-full bg-white/10 flex flex-shrink-0 items-center justify-center text-sm">🌿</div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-white truncate">{h.title || 'Analysis'}</p>
                         <p className="text-xs text-gray-100 mt-1">{timeAgo(h.timestamp)}</p>
                       </div>
+                      <span className="material-icons text-gray-100 text-sm self-center">chevron_right</span>
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="flex-grow flex flex-col items-center justify-center text-center py-12 opacity-90">
                   <span className="material-icons text-5xl font-bold text-outline-variant mb-4" style={{fontVariationSettings: "'wght' 200"}}>search</span>
-                  <p className="font-body-md text-body-md text-gray-100">No recent diagnoses found.</p>
-                  <p className="font-label-mono text-label-mono text-gray-100/90 mt-2">Upload an image to get started.</p>
+                  <p className="font-body-md text-body-md text-gray-100">{t('No recent diagnoses found.')}</p>
+                  <p className="font-label-mono text-label-mono text-gray-100/90 mt-2">{t('Upload an image to get started.')}</p>
                 </div>
               )}
             </div>
           </aside>
         </div>
       </main>
+
+      {/* Bug 7: Diagnosis Detail Modal */}
+      {selectedDiagnosis && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in" onClick={() => setSelectedDiagnosis(null)}>
+          <div className="bg-[#0F1C14] border border-white/10 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="bg-white/5 p-5 border-b border-white/10 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="material-icons text-secondary text-2xl">psychiatry</span>
+                <div>
+                  <h2 className="font-bold text-white text-lg">{t('Diagnosis Details')}</h2>
+                  <p className="text-xs text-gray-100">{timeAgo(selectedDiagnosis.timestamp)}</p>
+                </div>
+              </div>
+              <button onClick={() => setSelectedDiagnosis(null)} className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+                <span className="material-icons text-white">close</span>
+              </button>
+            </div>
+            <div className="overflow-y-auto flex-1 p-6">
+              {selectedDiagnosis.imageUrl && (
+                <div className="mb-6 flex justify-center">
+                  <img src={selectedDiagnosis.imageUrl} alt="Diagnosis" className="max-h-48 object-contain rounded-lg border border-white/10" />
+                </div>
+              )}
+              {selectedDiagnosis.fullAnalysis ? (
+                <div className="text-sm">
+                  {renderAnalysis(selectedDiagnosis.fullAnalysis)}
+                </div>
+              ) : (
+                <div className="text-center text-gray-100 py-8">
+                  <span className="material-icons text-3xl mb-2 block text-outline-variant">info</span>
+                  <p>{t('Full diagnosis text was not saved for this entry.')}</p>
+                  <p className="text-xs mt-1 text-gray-100/70">{selectedDiagnosis.title}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes pulse-bg {
