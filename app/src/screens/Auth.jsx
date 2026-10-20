@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '../apiConfig';
 import { useTranslation } from '../contexts/LanguageContext';
 
 export const Auth = ({ setSession, onLogin, setCurrentScreen }) => {
@@ -30,7 +31,7 @@ export const Auth = ({ setSession, onLogin, setCurrentScreen }) => {
 
     setLoading(true);
     try {
-      const res = await fetch(`https://planttalk-ai.onrender.com/api/auth`, {
+      const res = await fetch(getApiUrl('/api/auth'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ provider: 'gmail', contact: email })

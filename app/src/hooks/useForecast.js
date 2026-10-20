@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getApiUrl } from '../apiConfig';
 
 export const useForecast = (userId) => {
   const [forecast, setForecast] = useState([]);
@@ -16,7 +17,7 @@ export const useForecast = (userId) => {
         setIsLoading(true);
         setError(null);
         const response = await fetch(
-          `https://planttalk-ai.onrender.com/api/forecast?user_id=${userId}`
+          getApiUrl(`/api/forecast?user_id=${userId}`)
         );
         if (!response.ok) throw new Error(`Server error: ${response.status}`);
         const data = await response.json();

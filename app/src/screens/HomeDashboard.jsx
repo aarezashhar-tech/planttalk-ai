@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '../apiConfig';
 import { LocationSearch } from '../components/LocationSearch';
 import { useLocationWeather } from '../hooks/useLocationWeather';
 import { useTranslation } from '../contexts/LanguageContext';
@@ -24,7 +25,7 @@ export default function HomeDashboard() {
     const userId = session.user_id || 1;
     const storedLocation = JSON.parse(localStorage.getItem('selectedLocation'));
 
-    fetch(`${import.meta.env.VITE_API_URL || ''}https://planttalk-ai.onrender.com/api/insights?user_id=${userId}`)
+    fetch(getApiUrl(`/api/insights?user_id=${userId}`))
       .then(res => res.json())
       .then(async resData => {
         if (storedLocation) {
@@ -96,7 +97,7 @@ export default function HomeDashboard() {
     if (lat && lon) {
       console.log(`[Soil API] Fetching soil data for lat=${lat}, lon=${lon}`);
       setSoilLoading(true);
-      fetch(`https://planttalk-ai.onrender.com/api/soil?lat=${lat}&lon=${lon}`)
+      fetch(getApiUrl(`/api/soil?lat=${lat}&lon=${lon}`))
         .then(res => res.json())
         .then(data => {
           console.log('[Soil API] Response:', data);

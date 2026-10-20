@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '../apiConfig';
 import { useTranslation } from '../contexts/LanguageContext';
 
 export const ForecastPest = ({ backendData, userProfile, locationForecast }) => {
@@ -33,7 +34,7 @@ export const ForecastPest = ({ backendData, userProfile, locationForecast }) => 
       }
       
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || ''}https://planttalk-ai.onrender.com/api/forecast?user_id=${userId}`);
+        const response = await fetch(getApiUrl(`/api/forecast?user_id=${userId}`));
         const data = await response.json();
         setForecastData(data.forecast || []);
       } catch (e) {

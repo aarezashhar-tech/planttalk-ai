@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '../apiConfig';
 import { useTranslation } from '../contexts/LanguageContext';
 
 const FORECAST_LOADING_MESSAGES = [
@@ -25,7 +26,7 @@ export default function IndiaForecast() {
 
   const fetchForecast = () => {
     setLoading(true);
-    fetch(`https://planttalk-ai.onrender.com/api/india-forecast`)
+    fetch(getApiUrl('/api/india-forecast'))
       .then(res => {
         if (!res.ok) throw new Error("Server Error");
         return res.json();

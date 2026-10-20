@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { getApiUrl } from '../apiConfig';
 import { useTranslation } from '../contexts/LanguageContext';
 
 const LOADING_MESSAGES = [
@@ -75,7 +76,7 @@ export const PlantDoctor = ({ userProfile }) => {
       const base64Image = await fileToBase64(imageFile);
       const mimeType = imageFile.type || 'image/jpeg';
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/diagnose`, {
+      const response = await fetch(getApiUrl('/api/diagnose'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

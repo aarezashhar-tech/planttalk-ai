@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '../apiConfig';
 import { WateringSchedule } from '../components/WateringSchedule';
 import { LocationSearch } from '../components/LocationSearch';
 import { useTranslation } from '../contexts/LanguageContext';
@@ -18,7 +19,7 @@ export const Dashboard = ({ backendData, userProfile, onLocationSelected, locati
   useEffect(() => {
     if (lat && lon) {
       setSoilLoading(true);
-      fetch(`${import.meta.env.VITE_API_URL || ''}https://planttalk-ai.onrender.com/api/soil?lat=${lat}&lon=${lon}`)
+      fetch(getApiUrl(`/api/soil?lat=${lat}&lon=${lon}`))
         .then(res => res.json())
         .then(data => {
           setSoilData(data);
