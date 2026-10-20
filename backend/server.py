@@ -122,6 +122,39 @@ class APICallHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         parsed_path = urlparse(self.path)
         
+        if parsed_path.path == '/' or parsed_path.path == '':
+            self.send_response(200)
+            self.send_cors_headers()
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({"status": "ok", "message": "PlantTalk AI backend running"}).encode('utf-8'))
+            return
+
+        if parsed_path.path == '/api/weather':
+            query = parse_qs(parsed_path.query)
+            location = query.get('location', [None])[0] or query.get('q', [None])[0] or ''
+            lat_str = query.get('lat', [None])[0]
+            lon_str = query.get('lon', [None])[0]
+            
+            if lat_str and lon_str:
+                try:
+                    lat = float(lat_str)
+                    lon = float(lon_str)
+                    weather_result = weather_client.get_weather(lat, lon, location or "Current Location")
+                except ValueError:
+                    weather_result = {"success": False, "error": "Invalid lat or lon"}
+            else:
+                lat = 28.6139
+                lon = 77.2090
+                weather_result = weather_client.get_weather(lat, lon, location or "New Delhi")
+                
+            self.send_response(200 if weather_result.get("success", True) else 400)
+            self.send_cors_headers()
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(weather_result).encode('utf-8'))
+            return
+        
         if parsed_path.path == '/api/insights':
             query = parse_qs(parsed_path.query)
             user_id = query.get('user_id', [None])[0]
