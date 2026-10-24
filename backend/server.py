@@ -279,18 +279,27 @@ class APICallHandler(http.server.BaseHTTPRequestHandler):
             import time
             global forecast_cache
             
+            force_refresh = 'refresh=true' in self.path or 'force=true' in self.path
             current_time = time.time()
-            if forecast_cache["data"] is None or (current_time - forecast_cache["timestamp"]) > CACHE_TTL:
+            if force_refresh or forecast_cache["data"] is None or (current_time - forecast_cache["timestamp"]) > CACHE_TTL:
                 from india_forecast import generate_india_forecast
-                result = generate_india_forecast()
-                if "error" not in result:
+                result = generate_india_forecast(force_refresh=force_refresh)
+                is_valid = False
+                if isinstance(result, dict) and "regions" in result and len(result["regions"]) > 0:
+                    avg_temps = [r.get("summary", {}).get("avgTemp", 0) for r in result["regions"]]
+                    if any(t > 0 for t in avg_temps):
+                        is_valid = True
+                
+                if is_valid:
                     forecast_cache = {"data": result, "timestamp": current_time}
+                elif forecast_cache["data"] is not None:
+                    result = forecast_cache["data"]
             else:
                 result = forecast_cache["data"]
                 
             self.send_response(200)
+            self.send_cors_headers()
             self.send_header('Content-Type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             self.wfile.write(json.dumps(result).encode('utf-8'))
             return

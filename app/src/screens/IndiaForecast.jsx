@@ -13,8 +13,10 @@ export default function IndiaForecast() {
   const { t } = useTranslation();
   const [forecastData, setForecastData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [expandedRegion, setExpandedRegion] = useState(null);
   const [loadingMsgIdx, setLoadingMsgIdx] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (!loading) return;
@@ -24,9 +26,12 @@ export default function IndiaForecast() {
     return () => clearInterval(interval);
   }, [loading]);
 
-  const fetchForecast = () => {
-    setLoading(true);
-    fetch(getApiUrl('/api/india-forecast'))
+  const fetchForecast = (force = false) => {
+    if (force) setRefreshing(true);
+    else setLoading(true);
+
+    const url = getApiUrl(`/api/india-forecast${force ? '?refresh=true' : ''}`);
+    fetch(url)
       .then(res => {
         if (!res.ok) throw new Error("Server Error");
         return res.json();
@@ -34,11 +39,13 @@ export default function IndiaForecast() {
       .then(data => {
         setForecastData(data);
         setLoading(false);
+        setRefreshing(false);
       })
       .catch(err => {
         console.error("Failed to fetch regional forecast", err);
         setForecastData({ error: true });
         setLoading(false);
+        setRefreshing(false);
       });
   };
 
@@ -49,6 +56,16 @@ export default function IndiaForecast() {
   const toggleAccordion = (regionName) => {
     setExpandedRegion(prev => prev === regionName ? null : regionName);
   };
+
+  const filteredRegions = (forecastData?.regions || []).filter(region => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase().trim();
+    const matchesRegion = region.name.toLowerCase().includes(q);
+    const matchesStation = region.stations && region.stations.some(
+      s => s.city.toLowerCase().includes(q) || s.state.toLowerCase().includes(q)
+    );
+    return matchesRegion || matchesStation;
+  });
 
   if (loading) return (
     <div className="flex flex-col items-center justify-center h-screen bg-[#0F1C14] space-y-6">
@@ -62,7 +79,7 @@ export default function IndiaForecast() {
   if (!forecastData || forecastData.error) return (
     <div className="flex flex-col items-center justify-center h-screen bg-[#0F1C14] space-y-4">
       <div className="text-error font-medium">Failed to sync regional data.</div>
-      <button onClick={fetchForecast} className="px-6 py-2.5 bg-error/10 hover:bg-error/20 text-error border border-error/30 rounded-lg transition-colors flex items-center gap-2">
+      <button onClick={() => fetchForecast(true)} className="px-6 py-2.5 bg-error/10 hover:bg-error/20 text-error border border-error/30 rounded-lg transition-colors flex items-center gap-2">
         <span className="material-icons text-sm">refresh</span>
         Retry Connection
       </button>
@@ -104,12 +121,10 @@ export default function IndiaForecast() {
             <span className="font-label-mono text-label-mono">Settings</span>
           </a>
         </div>
-        
       </nav>
 
       {/* Main Content Wrapper */}
       <div className="flex-1 flex flex-col md:ml-64 min-h-screen">
-        {/* TopAppBar */}
         {/* Mobile Header */}
         <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0a1a10]/80 backdrop-blur-md border-b border-white/5 flex justify-between items-center px-4 z-40">
           <div className="flex items-center gap-2">
@@ -118,7 +133,15 @@ export default function IndiaForecast() {
             </div>
             <span className="font-bold text-secondary text-base tracking-tight">PlantTalk AI</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => fetchForecast(true)}
+              disabled={refreshing}
+              className="text-gray-100 hover:text-secondary p-2 rounded-full transition-colors"
+              title="Refresh Forecast"
+            >
+              <span className={`material-icons text-xl ${refreshing ? 'animate-spin text-secondary' : ''}`}>refresh</span>
+            </button>
             <button className="text-gray-100 hover:text-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full">
               <span className="material-icons text-xl">account_circle</span>
             </button>
@@ -131,8 +154,28 @@ export default function IndiaForecast() {
           <div className="flex items-center gap-6">
             <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-full flex items-center px-4 py-2 focus-within:border-secondary transition-colors">
               <span className="material-icons text-gray-100 mr-2">search</span>
-              <input className="bg-transparent border-none text-white font-body-md text-body-md focus:ring-0 placeholder-on-surface-variant w-48 outline-none" placeholder="Search regions..." type="text"/>
+              <input
+                className="bg-transparent border-none text-white font-body-md text-body-md focus:ring-0 placeholder-on-surface-variant w-48 outline-none"
+                placeholder="Search regions..."
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button onClick={() => setSearchQuery('')} className="text-gray-400 hover:text-white">
+                  <span className="material-icons text-sm">close</span>
+                </button>
+              )}
             </div>
+            <button
+              onClick={() => fetchForecast(true)}
+              disabled={refreshing}
+              className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-secondary text-xs flex items-center gap-1.5 transition-colors"
+              title="Refresh Forecast"
+            >
+              <span className={`material-icons text-sm ${refreshing ? 'animate-spin' : ''}`}>refresh</span>
+              <span>Sync</span>
+            </button>
             <button className="text-gray-100 hover:text-secondary transition-colors hover:translate-y-[-1px] transition-transform">
               <span className="material-icons" style={{fontVariationSettings: "'FILL' 0"}}>account_circle</span>
             </button>
@@ -145,54 +188,77 @@ export default function IndiaForecast() {
           <div className="w-full rounded-xl overflow-hidden relative h-40 md:h-64 mb-6 md:mb-10 border border-white/10 shadow-[0_0_30px_rgba(16,185,129,0.1)] animate-slide-up" style={{animationDelay: '0.1s', animationFillMode: 'both'}}>
             <div className="absolute inset-0 bg-gradient-to-r from-primary-container via-surface-container-high to-surface-container opacity-90 z-10"></div>
             <div className="absolute inset-0 z-20 flex flex-col justify-center p-6 md:p-12">
-              <h2 className="font-display-lg text-2xl md:text-4xl font-bold text-white mb-1 md:mb-2 tracking-tight">🇮🇳 {t('India Intelligence')}</h2>
-              <p className="font-body-md text-body-md text-primary opacity-90 uppercase tracking-widest text-xs md:text-base">{t('Multi-Model Regional Aggregate')}</p>
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="font-display-lg text-2xl md:text-4xl font-bold text-white mb-1 md:mb-2 tracking-tight">🇮🇳 {t('India Intelligence')}</h2>
+                  <p className="font-body-md text-body-md text-primary opacity-90 uppercase tracking-widest text-xs md:text-base">{t('Multi-Model Regional Aggregate')}</p>
+                </div>
+                <button
+                  onClick={() => fetchForecast(true)}
+                  disabled={refreshing}
+                  className="hidden md:flex px-4 py-2 bg-secondary/10 hover:bg-secondary/20 border border-secondary/30 rounded-lg text-secondary items-center gap-2 text-sm font-medium transition-all"
+                  title="Force Sync with Open-Meteo"
+                >
+                  <span className={`material-icons text-base ${refreshing ? 'animate-spin' : ''}`}>sync</span>
+                  <span>{refreshing ? 'Syncing...' : 'Sync Live'}</span>
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Accordion List */}
           <div className="grid grid-cols-1 gap-4 max-w-5xl mx-auto animate-slide-up" style={{animationDelay: '0.2s', animationFillMode: 'both'}}>
-            {forecastData.regions.map((region, idx) => (
-              <div key={idx} className="bg-white/5 backdrop-blur-xl border border-white/10 hover:bg-white/10 rounded-xl overflow-hidden cursor-pointer group transition-colors" onClick={() => toggleAccordion(region.name)}>
-                <div className="p-4 md:p-6 flex justify-between items-center border-b border-transparent group-hover:border-white/5 transition-colors min-h-[64px]">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center border border-white/10 group-hover:border-secondary transition-colors">
-                      <span className="material-icons text-secondary">explore</span>
-                    </div>
-                    <div>
-                      <h3 className="font-headline-lg-mobile text-base md:text-xl font-bold text-white">{region.name}</h3>
-                      <p className="font-label-mono text-label-mono text-gray-100 mt-0.5 md:mt-1 text-xs md:text-sm">Avg Temp: {region.summary.avgTemp}°C</p>
-                    </div>
-                  </div>
-                  <span className={`material-icons text-gray-100 transform transition-transform duration-300 ${expandedRegion === region.name ? 'rotate-180' : ''}`}>expand_more</span>
-                </div>
-                
-                <div className={`grid transition-all duration-400 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedRegion === region.name ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
-                  <div className="overflow-hidden bg-black/20">
-                    <div className="p-6 border-t border-white/5 space-y-4">
-                      {region.stations.map((station, sIdx) => (
-                        <div key={sIdx} className="bg-white/5 p-3 md:p-4 rounded-xl border border-white/10">
-                          <div className="flex justify-between font-semibold text-secondary text-sm md:text-base">
-                            <span>{station.city}, {station.state}</span>
-                            <span>{station.current.temp}°C</span>
-                          </div>
-                          
-                          {station.alerts.length > 0 && (
-                            <div className="mt-3 text-xs bg-error/20 text-error p-3 rounded-lg border border-error/50">
-                              ⚠️ {station.alerts[0].message}
-                            </div>
-                          )}
-                          
-                          <p className="text-sm text-gray-100 mt-3 font-medium flex gap-2">
-                            <span className="text-primary">🌱</span> {station.agri_advisory}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+            {filteredRegions.length === 0 ? (
+              <div className="text-center py-12 text-gray-400">
+                <span className="material-icons text-4xl mb-2 text-gray-500">search_off</span>
+                <p>No regions or stations match "{searchQuery}"</p>
               </div>
-            ))}
+            ) : (
+              filteredRegions.map((region, idx) => (
+                <div key={idx} className="bg-white/5 backdrop-blur-xl border border-white/10 hover:bg-white/10 rounded-xl overflow-hidden cursor-pointer group transition-colors" onClick={() => toggleAccordion(region.name)}>
+                  <div className="p-4 md:p-6 flex justify-between items-center border-b border-transparent group-hover:border-white/5 transition-colors min-h-[64px]">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center border border-white/10 group-hover:border-secondary transition-colors">
+                        <span className="material-icons text-secondary">explore</span>
+                      </div>
+                      <div>
+                        <h3 className="font-headline-lg-mobile text-base md:text-xl font-bold text-white">{region.name}</h3>
+                        <p className="font-label-mono text-label-mono text-gray-100 mt-0.5 md:mt-1 text-xs md:text-sm">
+                          Avg Temp: {region.summary.avgTemp}°C
+                          {region.summary.stationCount ? ` • ${region.summary.stationCount} Stations` : ''}
+                        </p>
+                      </div>
+                    </div>
+                    <span className={`material-icons text-gray-100 transform transition-transform duration-300 ${expandedRegion === region.name ? 'rotate-180' : ''}`}>expand_more</span>
+                  </div>
+                  
+                  <div className={`grid transition-all duration-400 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedRegion === region.name ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                    <div className="overflow-hidden bg-black/20">
+                      <div className="p-6 border-t border-white/5 space-y-4">
+                        {region.stations.map((station, sIdx) => (
+                          <div key={sIdx} className="bg-white/5 p-3 md:p-4 rounded-xl border border-white/10">
+                            <div className="flex justify-between font-semibold text-secondary text-sm md:text-base">
+                              <span>{station.city}, {station.state}</span>
+                              <span>{station.current.temp}°C</span>
+                            </div>
+                            
+                            {station.alerts.length > 0 && (
+                              <div className="mt-3 text-xs bg-error/20 text-error p-3 rounded-lg border border-error/50">
+                                ⚠️ {station.alerts[0].message}
+                              </div>
+                            )}
+                            
+                            <p className="text-sm text-gray-100 mt-3 font-medium flex gap-2">
+                              <span className="text-primary">🌱</span> {station.agri_advisory}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </main>
       </div>
